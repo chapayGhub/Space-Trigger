@@ -17,6 +17,7 @@
 #import "ShapeCache.h"
 #import "SimpleContactListener.h"
 #import "ParticleSystemArray.h"
+#import "LevelManager.h"
 
 #define kCategoryShip       0x1
 #define kCategoryShipLaser  0x2
@@ -52,7 +53,8 @@ enum GameStage {
     ParticleSystemArray * _explosions;
     GameStage _gameStage;
     BOOL _gameOver;
-    double _gameWonTime;
+    //double _gameWonTime;
+    LevelManager * _levelManager;
 }
 
 + (id)scene {
@@ -86,7 +88,7 @@ enum GameStage {
     
     if (_gameOver) return;
     _gameOver = TRUE;
-    _gameStage = GameStageDone;
+    //_gameStage = GameStageDone;
     
     CGSize winSize = [CCDirector sharedDirector].winSize;
     
@@ -176,7 +178,9 @@ enum GameStage {
     }
     
     [self spawnShip];
-    _gameStage = GameStageAsteroids;
+    //_gameStage = GameStageAsteroids;
+    [_levelManager nextStage];
+    [self newStageStarted];
     
 }
 
@@ -348,6 +352,10 @@ enum GameStage {
     [[ShapeCache sharedShapeCache] addShapesWithFile:@"Shapes.plist"];
 }
 
+- (void)setupLevelManager {
+    _levelManager = [[LevelManager alloc] init];
+}
+
 - (id)init {
     if ((self = [super init])) {
         
@@ -366,8 +374,10 @@ enum GameStage {
         self.touchEnabled = YES;
         [self setupBackground];
         
-        double curTime = CACurrentMediaTime();
-        _gameWonTime = curTime + 30.0;
+        //double curTime = CACurrentMediaTime();
+        //_gameWonTime = curTime + 30.0;
+        [self setupLevelManager];
+
     }
     return self;
 }
@@ -387,24 +397,25 @@ enum GameStage {
 
 - (void)updateAsteroids:(ccTime)dt {
 
-    if (_gameStage != GameStageAsteroids) return;
+    //if (_gameStage != GameStageAsteroids) return;
+    if (_levelManager.gameState != GameStateNormal) return;
+    if (![_levelManager boolForProp:@"SpawnAsteroids"]) return;
     
     CGSize winSize = [CCDirector sharedDirector].winSize;
     // Is it time to spawn an asteroid?
     double curTime = CACurrentMediaTime();
     if (curTime > _nextAsteroidSpawn) {
         
-        // Figure out the next time to spawn an asteroid
-        float randSecs = randomValueBetween(0.20, 1.0);
+        float spawnSecsLow = [_levelManager floatForProp:@"ASpawnSecsLow"];
+        float spawnSecsHigh = [_levelManager floatForProp:@"ASpawnSecsHigh"];
+        float randSecs = randomValueBetween(spawnSecsLow, spawnSecsHigh);
         _nextAsteroidSpawn = randSecs + curTime;
-        
-        // Figure out a random Y value to spawn at
-        float randY = randomValueBetween(0.0,
-                                         winSize.height);
-        
-        // Figure out a random amount of time to move
-        // from right to left
-        float randDuration = randomValueBetween(2.0, 10.0);
+
+        float randY = randomValueBetween(0.0, winSize.height);
+
+        float moveDurationLow = [_levelManager floatForProp:@"AMoveDurationLow"];
+        float moveDurationHigh = [_levelManager floatForProp:@"AMoveDurationHigh"];
+        float randDuration = randomValueBetween(moveDurationLow, moveDurationHigh);
         
         // Create a new asteroid sprite
         GameObject *asteroid = [_asteroidsArray nextSprite];
@@ -514,6 +525,20 @@ enum GameStage {
     
 }
 
+
+- (void)updateLevel:(ccTime)dt {
+    BOOL newStage = [_levelManager update];
+    if (newStage) {
+        [self newStageStarted];
+    }
+}
+
+- (void)newStageStarted {
+    if (_levelManager.gameState == GameStateDone) {
+        [self endScene:YES];
+    }
+}
+
 - (void)update:(ccTime)dt {
     [self updateShipPos:dt];
     [self updateAsteroids:dt];
@@ -521,9 +546,10 @@ enum GameStage {
     [self updateBackground:dt];
     [self updateBox2D:dt];
 
-    if (CACurrentMediaTime() > _gameWonTime) {
-        [self endScene:YES];
-    }
+    //if (CACurrentMediaTime() > _gameWonTime) {
+    //    [self endScene:YES];
+    //}
+    [self updateLevel:dt];
 }
 
 - (void)beginContact:(b2Contact *)contact {
@@ -617,6 +643,7 @@ enum GameStage {
             [_ship takeHit];
             
             if (_ship.dead) {
+                 _levelManager.gameState = GameStateDone;
                 [self endScene:NO];
             }
             

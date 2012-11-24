@@ -245,6 +245,8 @@
 		35CD707816601BF800535B83 /* Default-Landscape@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 35CD707716601BF800535B83 /* Default-Landscape@2x.png */; };
 		35E7C4D6166123050075C310 /* GameObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = 35E7C4D5166123050075C310 /* GameObject.mm */; };
 		35E7C4E21661306B0075C310 /* ParticleSystemArray.mm in Sources */ = {isa = PBXBuildFile; fileRef = 35E7C4E11661306B0075C310 /* ParticleSystemArray.mm */; };
+		35E7C4E916613DB70075C310 /* Levels.plist in Resources */ = {isa = PBXBuildFile; fileRef = 35E7C4E816613DB70075C310 /* Levels.plist */; };
+		35E7C4ED166140C20075C310 /* LevelManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 35E7C4EC166140C20075C310 /* LevelManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -685,6 +687,9 @@
 		35E7C4D5166123050075C310 /* GameObject.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GameObject.mm; sourceTree = "<group>"; };
 		35E7C4E01661306B0075C310 /* ParticleSystemArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleSystemArray.h; sourceTree = "<group>"; };
 		35E7C4E11661306B0075C310 /* ParticleSystemArray.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ParticleSystemArray.mm; sourceTree = "<group>"; };
+		35E7C4E816613DB70075C310 /* Levels.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Levels.plist; sourceTree = "<group>"; };
+		35E7C4EB166140C20075C310 /* LevelManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LevelManager.h; sourceTree = "<group>"; };
+		35E7C4EC166140C20075C310 /* LevelManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LevelManager.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -744,6 +749,7 @@
 			isa = PBXGroup;
 			children = (
 				359D5900165ED2B900EE148E /* Art */,
+				35E7C4E816613DB70075C310 /* Levels.plist */,
 				359D588E165EC51100EE148E /* AppDelegate.h */,
 				359D588F165EC51100EE148E /* AppDelegate.mm */,
 				359D5894165EC51100EE148E /* IntroLayer.h */,
@@ -760,6 +766,8 @@
 				35E7C4D5166123050075C310 /* GameObject.mm */,
 				35E7C4E01661306B0075C310 /* ParticleSystemArray.h */,
 				35E7C4E11661306B0075C310 /* ParticleSystemArray.mm */,
+				35E7C4EB166140C20075C310 /* LevelManager.h */,
+				35E7C4EC166140C20075C310 /* LevelManager.m */,
 				359D5672165EC50B00EE148E /* Resources */,
 				359D5690165EC50C00EE148E /* libs */,
 				359D588A165EC51100EE148E /* Supporting Files */,
@@ -1550,6 +1558,7 @@
 				3587A6B116602AE3003BE342 /* Icon-72@2x.png in Resources */,
 				3587A6B216602AE3003BE342 /* Icon-Small.png in Resources */,
 				3587A6B316602AE3003BE342 /* Icon@2x.png in Resources */,
+				35E7C4E916613DB70075C310 /* Levels.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1720,6 +1729,7 @@
 				35CD7065166007AE00535B83 /* Common.mm in Sources */,
 				35E7C4D6166123050075C310 /* GameObject.mm in Sources */,
 				35E7C4E21661306B0075C310 /* ParticleSystemArray.mm in Sources */,
+				35E7C4ED166140C20075C310 /* LevelManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
