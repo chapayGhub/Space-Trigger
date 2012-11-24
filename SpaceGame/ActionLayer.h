@@ -14,5 +14,7 @@
 + (id)scene;
 - (void)beginContact:(b2Contact *)contact;
 - (void)endContact:(b2Contact *)contact;
+- (void)shootEnemyLaserFromPosition:(CGPoint)position;
+- (void)shootCannonBallAtShipFromPosition:(CGPoint)position;
 
 @end

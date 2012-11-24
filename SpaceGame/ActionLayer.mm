@@ -18,6 +18,7 @@
 #import "SimpleContactListener.h"
 #import "ParticleSystemArray.h"
 #import "LevelManager.h"
+#import "BossShip.h"
 
 #define kCategoryShip       0x1
 #define kCategoryShipLaser  0x2
@@ -68,6 +69,9 @@ enum GameStage {
     double _nextPowerupSpawn;
     BOOL _invincible;
     ParticleSystemArray * _boostEffects;
+    BossShip * _boss;
+    BOOL _wantNextStage;
+    SpriteArray * _cannonBalls;
 }
 
 + (id)scene {
@@ -285,6 +289,7 @@ enum GameStage {
     _enemyLasers = [[SpriteArray alloc] initWithCapacity:15 spriteFrameName:@"laserbeam_red.png" batchNode:_batchNode world:_world shapeName:@"laserbeam_red" maxHp:1 healthBarType:HealthBarTypeNone];
     _powerups = [[SpriteArray alloc] initWithCapacity:1 spriteFrameName:@"powerup.png" batchNode:_batchNode world:_world shapeName:@"powerup" maxHp:1 healthBarType:HealthBarTypeNone];
     _boostEffects = [[ParticleSystemArray alloc] initWithFile:@"Boost.plist" capacity:1 parent:self];
+    _cannonBalls = [[SpriteArray alloc] initWithCapacity:5 spriteFrameName:@"Boss_cannon_ball.png" batchNode:_batchNode world:_world shapeName:@"Boss_cannon_ball" maxHp:1 healthBarType:HealthBarTypeNone];
 }
 
 - (void)setupBackground {
@@ -373,6 +378,12 @@ enum GameStage {
     _levelManager = [[LevelManager alloc] init];
 }
 
+- (void)setupBoss {
+    _boss = [[BossShip alloc] initWithWorld:_world layer:self];
+    _boss.visible = NO;
+    [_batchNode addChild:_boss];
+}
+
 - (id)init {
     if ((self = [super init])) {
         
@@ -394,6 +405,7 @@ enum GameStage {
         //double curTime = CACurrentMediaTime();
         //_gameWonTime = curTime + 30.0;
         [self setupLevelManager];
+        [self setupBoss];
 
     }
     return self;
@@ -548,6 +560,11 @@ enum GameStage {
     if (newStage) {
         [self newStageStarted];
     }
+    if (_wantNextStage) {
+        _wantNextStage = NO;
+        [_levelManager nextStage];
+        [self newStageStarted];
+    }
 }
 
 - (void)doLevelIntro {
@@ -590,11 +607,28 @@ enum GameStage {
     
 }
 
+- (void)spawnBoss {
+    
+    CGSize winSize = [CCDirector sharedDirector].winSize;
+    _boss.position = ccp(winSize.width*1.2,
+                         winSize.height*1.2);
+    
+    [_boss revive];
+    
+    [self shakeScreen:30];
+    [[SimpleAudioEngine sharedEngine]
+     playEffect:@"boss.caf"];
+    
+}
+
 - (void)newStageStarted {
     if (_levelManager.gameState == GameStateDone) {
         [self endScene:YES];
     } else if ([_levelManager boolForProp:@"SpawnLevelIntro"]) {
         [self doLevelIntro];
+    }
+    if ([_levelManager hasProp:@"SpawnBoss"]) {
+        [self spawnBoss];
     }
 }
 
@@ -612,6 +646,27 @@ enum GameStage {
                           position:ccp(-winSize.width, 0)],
       [CCCallFuncN actionWithTarget:self
                            selector:@selector(invisNode:)],
+      nil]];
+}
+
+- (void)shootCannonBallAtShipFromPosition:(CGPoint)position {
+    
+    CGSize winSize = [CCDirector sharedDirector].winSize;
+    GameObject *cannonBall = [_cannonBalls nextSprite];
+    
+    [[SimpleAudioEngine sharedEngine] playEffect:@"cannon.caf" pitch:1.0f pan:0.0f gain:0.25f];
+    
+    CGPoint shootVector =
+    ccpNormalize(ccpSub(_ship.position, position));
+    CGPoint shootTarget = ccpMult(shootVector,
+                                  winSize.width*2);
+    
+    cannonBall.position = position;
+    [cannonBall revive];
+    [cannonBall runAction:
+     [CCSequence actions:
+      [CCMoveBy actionWithDuration:5.0 position:shootTarget],
+      [CCCallFuncN actionWithTarget:self selector:@selector(invisNode:)],
       nil]];
 }
 
@@ -720,6 +775,16 @@ enum GameStage {
     }
 }
 
+- (void)updateBoss:(ccTime)dt {
+    
+    if (_levelManager.gameState != GameStateNormal) return;
+    if (![_levelManager boolForProp:@"SpawnBoss"]) return;
+    
+    if (_boss.visible) {
+        [_boss updateWithShipPosition:_ship.position];
+    }
+}
+
 - (void)update:(ccTime)dt {
     [self updateShipPos:dt];
     [self updateAsteroids:dt];
@@ -734,6 +799,7 @@ enum GameStage {
     [self updateAlienSwarm:dt];
     [self updatePowerups:dt];
     [self updateBoostEffects:dt];
+    [self updateBoss:dt];
 }
 
 - (void)beginContact:(b2Contact *)contact {
@@ -778,6 +844,11 @@ enum GameStage {
             [enemyShip takeHit];
             [laser takeHit];
             if ([enemyShip dead]) {
+                
+                if (enemyShip == _boss) {
+                    _wantNextStage = YES;
+                }
+                
                 [[SimpleAudioEngine sharedEngine] playEffect:@"explosion_large.caf" pitch:1.0f pan:0.0f gain:0.25f];
                 CCParticleSystemQuad *explosion = [_explosions nextParticleSystem];
                 

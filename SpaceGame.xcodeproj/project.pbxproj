@@ -247,6 +247,7 @@
 		35E7C4E21661306B0075C310 /* ParticleSystemArray.mm in Sources */ = {isa = PBXBuildFile; fileRef = 35E7C4E11661306B0075C310 /* ParticleSystemArray.mm */; };
 		35E7C4E916613DB70075C310 /* Levels.plist in Resources */ = {isa = PBXBuildFile; fileRef = 35E7C4E816613DB70075C310 /* Levels.plist */; };
 		35E7C4ED166140C20075C310 /* LevelManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 35E7C4EC166140C20075C310 /* LevelManager.m */; };
+		35E7C72116615AE00075C310 /* BossShip.mm in Sources */ = {isa = PBXBuildFile; fileRef = 35E7C72016615AE00075C310 /* BossShip.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -690,6 +691,8 @@
 		35E7C4E816613DB70075C310 /* Levels.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Levels.plist; sourceTree = "<group>"; };
 		35E7C4EB166140C20075C310 /* LevelManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LevelManager.h; sourceTree = "<group>"; };
 		35E7C4EC166140C20075C310 /* LevelManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LevelManager.m; sourceTree = "<group>"; };
+		35E7C71F16615AE00075C310 /* BossShip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BossShip.h; sourceTree = "<group>"; };
+		35E7C72016615AE00075C310 /* BossShip.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = BossShip.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -768,6 +771,8 @@
 				35E7C4E11661306B0075C310 /* ParticleSystemArray.mm */,
 				35E7C4EB166140C20075C310 /* LevelManager.h */,
 				35E7C4EC166140C20075C310 /* LevelManager.m */,
+				35E7C71F16615AE00075C310 /* BossShip.h */,
+				35E7C72016615AE00075C310 /* BossShip.mm */,
 				359D5672165EC50B00EE148E /* Resources */,
 				359D5690165EC50C00EE148E /* libs */,
 				359D588A165EC51100EE148E /* Supporting Files */,
@@ -1730,6 +1735,7 @@
 				35E7C4D6166123050075C310 /* GameObject.mm in Sources */,
 				35E7C4E21661306B0075C310 /* ParticleSystemArray.mm in Sources */,
 				35E7C4ED166140C20075C310 /* LevelManager.m in Sources */,
+				35E7C72116615AE00075C310 /* BossShip.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
