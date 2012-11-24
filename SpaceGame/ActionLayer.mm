@@ -142,7 +142,7 @@ enum GameStage {
     
     CGSize winSize = [CCDirector sharedDirector].winSize;
     
-    _ship = [[GameObject alloc] initWithSpriteFrameName:@"SpaceFlier_sm_1.png" world:_world shapeName:@"SpaceFlier_sm_1" maxHp:10];
+    _ship = [[GameObject alloc] initWithSpriteFrameName:@"SpaceFlier_sm_1.png" world:_world shapeName:@"SpaceFlier_sm_1" maxHp:10 healthBarType:HealthBarTypeGreen];
     _ship.position = ccp(-_ship.contentSize.width/2,
                          winSize.height * 0.5);
     [_ship revive];
@@ -278,12 +278,12 @@ enum GameStage {
 }
 
 - (void)setupArrays {
-    _asteroidsArray = [[SpriteArray alloc] initWithCapacity:15 spriteFrameName:@"asteroid.png" batchNode:_batchNode world:_world shapeName:@"asteroid" maxHp:1];
-    _laserArray = [[SpriteArray alloc] initWithCapacity:15 spriteFrameName:@"laserbeam_blue.png" batchNode:_batchNode world:_world shapeName:@"laserbeam_blue" maxHp:1];
+    _asteroidsArray = [[SpriteArray alloc] initWithCapacity:30 spriteFrameName:@"asteroid.png" batchNode:_batchNode world:_world shapeName:@"asteroid" maxHp:1 healthBarType:HealthBarTypeNone];
+    _laserArray = [[SpriteArray alloc] initWithCapacity:15 spriteFrameName:@"laserbeam_blue.png" batchNode:_batchNode world:_world shapeName:@"laserbeam_blue" maxHp:1 healthBarType:HealthBarTypeNone];
     _explosions = [[ParticleSystemArray alloc] initWithFile:@"Explosion.plist" capacity:3 parent:self];
-    _alienArray = [[SpriteArray alloc] initWithCapacity:15 spriteFrameName:@"enemy_spaceship.png" batchNode:_batchNode world:_world shapeName:@"enemy_spaceship" maxHp:1];
-    _enemyLasers = [[SpriteArray alloc] initWithCapacity:15 spriteFrameName:@"laserbeam_red.png" batchNode:_batchNode world:_world shapeName:@"laserbeam_red" maxHp:1];
-    _powerups = [[SpriteArray alloc] initWithCapacity:1 spriteFrameName:@"powerup.png" batchNode:_batchNode world:_world shapeName:@"powerup" maxHp:1];
+    _alienArray = [[SpriteArray alloc] initWithCapacity:15 spriteFrameName:@"enemy_spaceship.png" batchNode:_batchNode world:_world shapeName:@"enemy_spaceship" maxHp:1 healthBarType:HealthBarTypeNone];
+    _enemyLasers = [[SpriteArray alloc] initWithCapacity:15 spriteFrameName:@"laserbeam_red.png" batchNode:_batchNode world:_world shapeName:@"laserbeam_red" maxHp:1 healthBarType:HealthBarTypeNone];
+    _powerups = [[SpriteArray alloc] initWithCapacity:1 spriteFrameName:@"powerup.png" batchNode:_batchNode world:_world shapeName:@"powerup" maxHp:1 healthBarType:HealthBarTypeNone];
     _boostEffects = [[ParticleSystemArray alloc] initWithFile:@"Boost.plist" capacity:1 parent:self];
 }
 
