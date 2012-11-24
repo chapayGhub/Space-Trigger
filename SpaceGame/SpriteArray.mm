@@ -13,14 +13,13 @@
     int _nextItem;
 }
 
-- (id)initWithCapacity:(int)capacity spriteFrameName:(NSString *)spriteFrameName batchNode:(CCSpriteBatchNode *)batchNode {
+- (id)initWithCapacity:(int)capacity spriteFrameName:(NSString *)spriteFrameName batchNode:(CCSpriteBatchNode *)batchNode world:(b2World *)world shapeName:(NSString *)shapeName maxHp:(int)maxHp {
     
     if ((self = [super init])) {
         
         _array = [[CCArray alloc] initWithCapacity:capacity];
         for(int i = 0; i < capacity; ++i) {
-            CCSprite *sprite = [CCSprite
-                                spriteWithSpriteFrameName:spriteFrameName];
+            GameObject *sprite = [[GameObject alloc] initWithSpriteFrameName:spriteFrameName world:world shapeName:shapeName maxHp:maxHp];
             sprite.visible = NO;
             [batchNode addChild:sprite];
             [_array addObject:sprite];

@@ -222,7 +222,7 @@
 		359D595B165ED2B900EE148E /* Sprites.pvr.ccz in Resources */ = {isa = PBXBuildFile; fileRef = 359D5933165ED2B900EE148E /* Sprites.pvr.ccz */; };
 		359D595E165ED37E00EE148E /* SpaceGameFont-ipadhd.png in Resources */ = {isa = PBXBuildFile; fileRef = 359D595C165ED37E00EE148E /* SpaceGameFont-ipadhd.png */; };
 		359D595F165ED37E00EE148E /* SpaceGameFont-ipadhd.fnt in Resources */ = {isa = PBXBuildFile; fileRef = 359D595D165ED37E00EE148E /* SpaceGameFont-ipadhd.fnt */; };
-		359D5962165ED3DC00EE148E /* ActionLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 359D5961165ED3DC00EE148E /* ActionLayer.m */; };
+		359D5962165ED3DC00EE148E /* ActionLayer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 359D5961165ED3DC00EE148E /* ActionLayer.mm */; };
 		35CD704D165FF65800535B83 /* star1-hd.png in Resources */ = {isa = PBXBuildFile; fileRef = 35CD7044165FF65700535B83 /* star1-hd.png */; };
 		35CD704E165FF65800535B83 /* star1-ipadhd.png in Resources */ = {isa = PBXBuildFile; fileRef = 35CD7045165FF65800535B83 /* star1-ipadhd.png */; };
 		35CD704F165FF65800535B83 /* star1.png in Resources */ = {isa = PBXBuildFile; fileRef = 35CD7046165FF65800535B83 /* star1.png */; };
@@ -234,8 +234,8 @@
 		35CD7055165FF65800535B83 /* star3.png in Resources */ = {isa = PBXBuildFile; fileRef = 35CD704C165FF65800535B83 /* star3.png */; };
 		35CD7059165FFE6200535B83 /* Sprites-ipadhd.plist in Resources */ = {isa = PBXBuildFile; fileRef = 35CD7057165FFE6200535B83 /* Sprites-ipadhd.plist */; };
 		35CD705A165FFE6200535B83 /* Sprites-ipadhd.pvr.ccz in Resources */ = {isa = PBXBuildFile; fileRef = 35CD7058165FFE6200535B83 /* Sprites-ipadhd.pvr.ccz */; };
-		35CD70611660051700535B83 /* SpriteArray.m in Sources */ = {isa = PBXBuildFile; fileRef = 35CD70601660051700535B83 /* SpriteArray.m */; };
-		35CD7065166007AE00535B83 /* Common.m in Sources */ = {isa = PBXBuildFile; fileRef = 35CD7064166007AE00535B83 /* Common.m */; };
+		35CD70611660051700535B83 /* SpriteArray.mm in Sources */ = {isa = PBXBuildFile; fileRef = 35CD70601660051700535B83 /* SpriteArray.mm */; };
+		35CD7065166007AE00535B83 /* Common.mm in Sources */ = {isa = PBXBuildFile; fileRef = 35CD7064166007AE00535B83 /* Common.mm */; };
 		35CD706C16601ACB00535B83 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 35CD706B16601ACB00535B83 /* Default-568h@2x.png */; };
 		35CD707216601B8100535B83 /* bg_front_spacedust-ipadhd.png in Resources */ = {isa = PBXBuildFile; fileRef = 35CD706D16601B7F00535B83 /* bg_front_spacedust-ipadhd.png */; };
 		35CD707316601B8100535B83 /* bg_galaxy-ipadhd.png in Resources */ = {isa = PBXBuildFile; fileRef = 35CD706E16601B8000535B83 /* bg_galaxy-ipadhd.png */; };
@@ -243,6 +243,7 @@
 		35CD707516601B8100535B83 /* bg_spacialanomaly-ipadhd.png in Resources */ = {isa = PBXBuildFile; fileRef = 35CD707016601B8000535B83 /* bg_spacialanomaly-ipadhd.png */; };
 		35CD707616601B8100535B83 /* bg_spacialanomaly2-ipadhd.png in Resources */ = {isa = PBXBuildFile; fileRef = 35CD707116601B8100535B83 /* bg_spacialanomaly2-ipadhd.png */; };
 		35CD707816601BF800535B83 /* Default-Landscape@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 35CD707716601BF800535B83 /* Default-Landscape@2x.png */; };
+		35E7C4D6166123050075C310 /* GameObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = 35E7C4D5166123050075C310 /* GameObject.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -656,7 +657,7 @@
 		359D595C165ED37E00EE148E /* SpaceGameFont-ipadhd.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "SpaceGameFont-ipadhd.png"; sourceTree = "<group>"; };
 		359D595D165ED37E00EE148E /* SpaceGameFont-ipadhd.fnt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "SpaceGameFont-ipadhd.fnt"; sourceTree = "<group>"; };
 		359D5960165ED3DB00EE148E /* ActionLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionLayer.h; sourceTree = "<group>"; };
-		359D5961165ED3DC00EE148E /* ActionLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ActionLayer.m; sourceTree = "<group>"; };
+		359D5961165ED3DC00EE148E /* ActionLayer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ActionLayer.mm; sourceTree = "<group>"; };
 		35CD7044165FF65700535B83 /* star1-hd.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "star1-hd.png"; sourceTree = "<group>"; };
 		35CD7045165FF65800535B83 /* star1-ipadhd.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "star1-ipadhd.png"; sourceTree = "<group>"; };
 		35CD7046165FF65800535B83 /* star1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = star1.png; sourceTree = "<group>"; };
@@ -669,9 +670,9 @@
 		35CD7057165FFE6200535B83 /* Sprites-ipadhd.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Sprites-ipadhd.plist"; sourceTree = "<group>"; };
 		35CD7058165FFE6200535B83 /* Sprites-ipadhd.pvr.ccz */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Sprites-ipadhd.pvr.ccz"; sourceTree = "<group>"; };
 		35CD705F1660051700535B83 /* SpriteArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpriteArray.h; sourceTree = "<group>"; };
-		35CD70601660051700535B83 /* SpriteArray.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpriteArray.m; sourceTree = "<group>"; };
+		35CD70601660051700535B83 /* SpriteArray.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SpriteArray.mm; sourceTree = "<group>"; };
 		35CD7063166007AE00535B83 /* Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Common.h; sourceTree = "<group>"; };
-		35CD7064166007AE00535B83 /* Common.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Common.m; sourceTree = "<group>"; };
+		35CD7064166007AE00535B83 /* Common.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Common.mm; sourceTree = "<group>"; };
 		35CD706B16601ACB00535B83 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		35CD706D16601B7F00535B83 /* bg_front_spacedust-ipadhd.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bg_front_spacedust-ipadhd.png"; sourceTree = "<group>"; };
 		35CD706E16601B8000535B83 /* bg_galaxy-ipadhd.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bg_galaxy-ipadhd.png"; sourceTree = "<group>"; };
@@ -679,6 +680,8 @@
 		35CD707016601B8000535B83 /* bg_spacialanomaly-ipadhd.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bg_spacialanomaly-ipadhd.png"; sourceTree = "<group>"; };
 		35CD707116601B8100535B83 /* bg_spacialanomaly2-ipadhd.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bg_spacialanomaly2-ipadhd.png"; sourceTree = "<group>"; };
 		35CD707716601BF800535B83 /* Default-Landscape@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-Landscape@2x.png"; sourceTree = "<group>"; };
+		35E7C4D4166123050075C310 /* GameObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameObject.h; sourceTree = "<group>"; };
+		35E7C4D5166123050075C310 /* GameObject.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GameObject.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -745,11 +748,13 @@
 				359D5897165EC51100EE148E /* GLES-Render.h */,
 				359D5898165EC51100EE148E /* GLES-Render.mm */,
 				359D5960165ED3DB00EE148E /* ActionLayer.h */,
-				359D5961165ED3DC00EE148E /* ActionLayer.m */,
+				359D5961165ED3DC00EE148E /* ActionLayer.mm */,
 				35CD7063166007AE00535B83 /* Common.h */,
-				35CD7064166007AE00535B83 /* Common.m */,
+				35CD7064166007AE00535B83 /* Common.mm */,
 				35CD705F1660051700535B83 /* SpriteArray.h */,
-				35CD70601660051700535B83 /* SpriteArray.m */,
+				35CD70601660051700535B83 /* SpriteArray.mm */,
+				35E7C4D4166123050075C310 /* GameObject.h */,
+				35E7C4D5166123050075C310 /* GameObject.mm */,
 				359D5672165EC50B00EE148E /* Resources */,
 				359D5690165EC50C00EE148E /* libs */,
 				359D588A165EC51100EE148E /* Supporting Files */,
@@ -1705,9 +1710,10 @@
 				359D5899165EC51100EE148E /* GLES-Render.mm in Sources */,
 				359D593E165ED2B900EE148E /* CCParallaxNode-Extras.m in Sources */,
 				359D593F165ED2B900EE148E /* ShapeCache.mm in Sources */,
-				359D5962165ED3DC00EE148E /* ActionLayer.m in Sources */,
-				35CD70611660051700535B83 /* SpriteArray.m in Sources */,
-				35CD7065166007AE00535B83 /* Common.m in Sources */,
+				359D5962165ED3DC00EE148E /* ActionLayer.mm in Sources */,
+				35CD70611660051700535B83 /* SpriteArray.mm in Sources */,
+				35CD7065166007AE00535B83 /* Common.mm in Sources */,
+				35E7C4D6166123050075C310 /* GameObject.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

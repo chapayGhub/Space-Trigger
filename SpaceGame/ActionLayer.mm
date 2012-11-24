@@ -11,13 +11,17 @@
 #import "Common.h"
 #import "SpriteArray.h"
 #import "CCParallaxNode-Extras.h"
+#import "Box2D.h"
+#import "GLES-Render.h"
+#import "GameObject.h"
+#import "ShapeCache.h"
 
 @implementation ActionLayer {
     CCLabelBMFont * _titleLabel1;
     CCLabelBMFont * _titleLabel2;
     CCMenuItemLabel * _playItem;
     CCSpriteBatchNode * _batchNode;
-    CCSprite * _ship;
+    GameObject * _ship;
     float _shipPointsPerSecY;
     double _nextAsteroidSpawn;
     SpriteArray * _asteroidsArray;
@@ -29,6 +33,8 @@
     CCSprite * _galaxy;
     CCSprite * _spacialanomaly;
     CCSprite * _spacialanomaly2;
+    b2World * _world;
+    GLESDebugDraw * _debugDraw;
 }
 
 + (id)scene {
@@ -44,17 +50,18 @@
     [sender removeFromParent];
 }
 
-- (void)invisNode:(CCNode *)sender {
-    sender.visible = FALSE;
+- (void)invisNode:(GameObject *)sender {
+    [sender destroy];
 }
 
 - (void)spawnShip {
     
     CGSize winSize = [CCDirector sharedDirector].winSize;
     
-    _ship = [CCSprite spriteWithSpriteFrameName:@"SpaceFlier_sm_1.png"];
+    _ship = [[GameObject alloc] initWithSpriteFrameName:@"SpaceFlier_sm_1.png" world:_world shapeName:@"SpaceFlier_sm_1" maxHp:10];
     _ship.position = ccp(-_ship.contentSize.width/2,
                          winSize.height * 0.5);
+    [_ship revive];
     [_batchNode addChild:_ship z:1];
     
     [_ship runAction:
@@ -184,10 +191,8 @@
 }
 
 - (void)setupArrays {
-    _asteroidsArray = [[SpriteArray alloc] initWithCapacity:30
-                                            spriteFrameName:@"asteroid.png" batchNode:_batchNode];
-    _laserArray = [[SpriteArray alloc] initWithCapacity:15
-                                        spriteFrameName:@"laserbeam_blue.png" batchNode:_batchNode];    
+    _asteroidsArray = [[SpriteArray alloc] initWithCapacity:15 spriteFrameName:@"asteroid.png" batchNode:_batchNode world:_world shapeName:@"asteroid" maxHp:1];
+    _laserArray = [[SpriteArray alloc] initWithCapacity:15 spriteFrameName:@"laserbeam_blue.png" batchNode:_batchNode world:_world shapeName:@"laserbeam_blue" maxHp:1];
 }
 
 - (void)setupBackground {
@@ -234,8 +239,50 @@
                positionOffset:ccp(1500,winSize.height * 0.9)];
 }
 
+- (void)setupDebugDraw {
+    _debugDraw = new GLESDebugDraw(PTM_RATIO);
+    _world->SetDebugDraw(_debugDraw);
+    _debugDraw->SetFlags(b2Draw::e_shapeBit | b2Draw::e_jointBit);
+}
+
+- (void)setupWorld {
+    b2Vec2 gravity = b2Vec2(0.0f, 0.0f);
+    _world = new b2World(gravity);
+}
+
+- (void)testBox2D {
+    
+    CGSize winSize = [CCDirector sharedDirector].winSize;
+    
+    b2BodyDef bodyDef;
+    bodyDef.type = b2_dynamicBody;
+    bodyDef.position = b2Vec2(winSize.width/2/PTM_RATIO,
+                              winSize.height/2/PTM_RATIO);
+    b2Body *body = _world->CreateBody(&bodyDef);
+    
+    b2CircleShape circleShape;
+    circleShape.m_radius = 0.25;
+    b2FixtureDef fixtureDef;
+    fixtureDef.shape = &circleShape;
+    fixtureDef.density = 1.0;
+    body->CreateFixture(&fixtureDef);
+    
+    body->ApplyAngularImpulse(0.01);
+    
+}
+
+- (void)setupShapeCache {
+    [[ShapeCache sharedShapeCache] addShapesWithFile:@"Shapes.plist"];
+}
+
 - (id)init {
     if ((self = [super init])) {
+        
+        [self setupWorld];
+        [self setupDebugDraw];
+        //[self testBox2D];
+        [self setupShapeCache];
+        
         [self setupSound];
         [self setupTitle];
         [self setupStars];
@@ -281,7 +328,7 @@
         float randDuration = randomValueBetween(2.0, 10.0);
         
         // Create a new asteroid sprite
-        CCSprite *asteroid = [_asteroidsArray nextSprite];
+        GameObject *asteroid = [_asteroidsArray nextSprite];
         [asteroid stopAllActions];
         asteroid.visible = YES;
         
@@ -292,11 +339,15 @@
         int randNum = arc4random() % 3;
         if (randNum == 0) {
             asteroid.scale = 0.25;
+            asteroid.maxHp = 2;
         } else if (randNum == 1) {
             asteroid.scale = 0.5;
+            asteroid.maxHp = 4;
         } else {
             asteroid.scale = 1.0;
+            asteroid.maxHp = 6;
         }
+        [asteroid revive];
         
         // Move it offscreen to the left, and when it's
         // done call removeNode
@@ -364,12 +415,41 @@
     
 }
 
+- (void)updateBox2D:(ccTime)dt {
+    _world->Step(dt, 1, 1);
+    
+    for(b2Body *b = _world->GetBodyList(); b; b=b->GetNext()) {
+        if (b->GetUserData() != NULL) {
+            GameObject *sprite =
+            (__bridge GameObject *)b->GetUserData();
+            
+            b2Vec2 b2Position =
+            b2Vec2(sprite.position.x/PTM_RATIO,
+                   sprite.position.y/PTM_RATIO);
+            float32 b2Angle =
+            -1 * CC_DEGREES_TO_RADIANS(sprite.rotation);
+            
+            b->SetTransform(b2Position, b2Angle);
+        }
+    }
+    
+}
 
 - (void)update:(ccTime)dt {
     [self updateShipPos:dt];
     [self updateAsteroids:dt];
     [self updateCollisions:dt];
     [self updateBackground:dt];
+    [self updateBox2D:dt];
+}
+
+- (void) draw
+{    
+    [super draw];
+    ccGLEnableVertexAttribs( kCCVertexAttribFlag_Position );
+    kmGLPushMatrix();
+    _world->DrawDebugData();
+    kmGLPopMatrix();
 }
 
 - (void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
@@ -382,12 +462,11 @@
      playEffect:@"laser_ship.caf" pitch:1.0f pan:0.0f
      gain:0.25f];
     
-    CCSprite *shipLaser = [_laserArray nextSprite];
+    GameObject *shipLaser = [_laserArray nextSprite];
     [shipLaser stopAllActions];
-    shipLaser.visible = YES;
+    shipLaser.position = ccpAdd(_ship.position, ccp(shipLaser.contentSize.width/2, 0));
+    [shipLaser revive];
     
-    shipLaser.position = ccpAdd(_ship.position,
-                                ccp(shipLaser.contentSize.width/2, 0));
     [shipLaser runAction:
      [CCSequence actions:
       [CCMoveBy actionWithDuration:0.5
