@@ -15,6 +15,12 @@
 #import "GLES-Render.h"
 #import "GameObject.h"
 #import "ShapeCache.h"
+#import "SimpleContactListener.h"
+
+#define kCategoryShip       0x1
+#define kCategoryShipLaser  0x2
+#define kCategoryEnemy      0x4
+#define kCategoryPowerup    0x8
 
 @implementation ActionLayer {
     CCLabelBMFont * _titleLabel1;
@@ -35,6 +41,7 @@
     CCSprite * _spacialanomaly2;
     b2World * _world;
     GLESDebugDraw * _debugDraw;
+    b2ContactListener * _contactListener;
 }
 
 + (id)scene {
@@ -78,14 +85,14 @@
     
     CCSpriteFrameCache * cache =
     [CCSpriteFrameCache sharedSpriteFrameCache];
-
+    
     CCAnimation *animation = [CCAnimation animation];
     [animation addSpriteFrame:
      [cache spriteFrameByName:@"SpaceFlier_sm_1.png"]];
     [animation addSpriteFrame:
      [cache spriteFrameByName:@"SpaceFlier_sm_2.png"]];
     animation.delayPerUnit = 0.2;
-
+    
     [_ship runAction:
      [CCRepeatForever actionWithAction:
       [CCAnimate actionWithAnimation:animation]]];
@@ -146,11 +153,11 @@
     _playItem = [CCMenuItemLabel itemWithLabel:playLabel target:self selector:@selector(playTapped:)];
     _playItem.scale = 0;
     _playItem.position = ccp(winSize.width/2, winSize.height * 0.3);
-
+    
     CCMenu *menu = [CCMenu menuWithItems:_playItem, nil];
     menu.position = CGPointZero;
     [self addChild:menu];
-
+    
     [_playItem runAction:
      [CCSequence actions:
       [CCDelayTime actionWithDuration:2.0],
@@ -233,9 +240,9 @@
                positionOffset:ccp(600,winSize.height * 0)];
     [_backgroundNode addChild:_spacialanomaly z:-1
                 parallaxRatio:bgSpeed
-               positionOffset:ccp(900,winSize.height * 0.3)];        
-    [_backgroundNode addChild:_spacialanomaly2 z:-1 
-                parallaxRatio:bgSpeed 
+               positionOffset:ccp(900,winSize.height * 0.3)];
+    [_backgroundNode addChild:_spacialanomaly2 z:-1
+                parallaxRatio:bgSpeed
                positionOffset:ccp(1500,winSize.height * 0.9)];
 }
 
@@ -248,6 +255,8 @@
 - (void)setupWorld {
     b2Vec2 gravity = b2Vec2(0.0f, 0.0f);
     _world = new b2World(gravity);
+    _contactListener = new SimpleContactListener(self);
+    _world->SetContactListener(_contactListener);
 }
 
 - (void)testBox2D {
@@ -388,7 +397,7 @@
 }
 
 - (void)visit {
-
+    
     [super visit];
     
     NSArray *spaceDusts = @[_spacedust1, _spacedust2];
@@ -438,17 +447,66 @@
 - (void)update:(ccTime)dt {
     [self updateShipPos:dt];
     [self updateAsteroids:dt];
-    [self updateCollisions:dt];
+    //[self updateCollisions:dt];
     [self updateBackground:dt];
     [self updateBox2D:dt];
 }
 
+- (void)beginContact:(b2Contact *)contact {
+    
+    b2Fixture *fixtureA = contact->GetFixtureA();
+    b2Fixture *fixtureB = contact->GetFixtureB();
+    b2Body *bodyA = fixtureA->GetBody();
+    b2Body *bodyB = fixtureB->GetBody();
+    GameObject *spriteA = (__bridge GameObject *) bodyA->GetUserData();
+    GameObject *spriteB = (__bridge GameObject *) bodyB->GetUserData();
+    
+    if (!spriteA.visible || !spriteB.visible) return;
+    
+    CGSize winSize = [CCDirector sharedDirector].winSize;
+    
+    if ((fixtureA->GetFilterData().categoryBits &
+         kCategoryShipLaser &&
+         fixtureB->GetFilterData().categoryBits &
+         kCategoryEnemy) ||
+        (fixtureB->GetFilterData().categoryBits &
+         kCategoryShipLaser &&
+         fixtureA->GetFilterData().categoryBits &
+         kCategoryEnemy))
+    {
+        
+        // Determine enemy ship and laser
+        GameObject *enemyShip = (GameObject*) spriteA;
+        GameObject *laser = (GameObject *) spriteB;
+        if (fixtureB->GetFilterData().categoryBits &
+            kCategoryEnemy) {
+            enemyShip = (GameObject*) spriteB;
+            laser = (GameObject*) spriteA;
+        }
+        
+        // Make sure not already dead
+        if (!enemyShip.dead && !laser.dead) {            
+            [enemyShip takeHit];
+            [laser takeHit];
+            if ([enemyShip dead]) {
+                [[SimpleAudioEngine sharedEngine] playEffect:@"explosion_large.caf" pitch:1.0f pan:0.0f gain:0.25f];
+            } else {
+                [[SimpleAudioEngine sharedEngine] playEffect:@"explosion_small.caf" pitch:1.0f pan:0.0f gain:0.25f];
+            }
+        }
+    }
+}
+
+- (void)endContact:(b2Contact *)contact {
+    
+}
+
 - (void) draw
-{    
+{
     [super draw];
     ccGLEnableVertexAttribs( kCCVertexAttribFlag_Position );
     kmGLPushMatrix();
-    _world->DrawDebugData();
+    //_world->DrawDebugData();
     kmGLPopMatrix();
 }
 
@@ -509,7 +567,7 @@
     float pointsPerSecX = kShipMaxPointsPerSec * accelFractionX;
     
     _shipPointsPerSecY = pointsPerSecX;
-
+    
 }
 
 @end
