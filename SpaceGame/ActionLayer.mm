@@ -16,11 +16,18 @@
 #import "GameObject.h"
 #import "ShapeCache.h"
 #import "SimpleContactListener.h"
+#import "ParticleSystemArray.h"
 
 #define kCategoryShip       0x1
 #define kCategoryShipLaser  0x2
 #define kCategoryEnemy      0x4
 #define kCategoryPowerup    0x8
+
+enum GameStage {
+    GameStageTitle = 0,
+    GameStageAsteroids,
+    GameStageDone
+};
 
 @implementation ActionLayer {
     CCLabelBMFont * _titleLabel1;
@@ -42,6 +49,10 @@
     b2World * _world;
     GLESDebugDraw * _debugDraw;
     b2ContactListener * _contactListener;
+    ParticleSystemArray * _explosions;
+    GameStage _gameStage;
+    BOOL _gameOver;
+    double _gameWonTime;
 }
 
 + (id)scene {
@@ -59,6 +70,57 @@
 
 - (void)invisNode:(GameObject *)sender {
     [sender destroy];
+}
+
+- (void)restartTapped:(id)sender {
+    
+    // Reload the current scene
+    CCScene *scene = [ActionLayer scene];
+    [[CCDirector sharedDirector] replaceScene:
+     [CCTransitionZoomFlipX transitionWithDuration:0.5
+                                             scene:scene]];
+    
+}
+
+- (void)endScene:(BOOL)win {
+    
+    if (_gameOver) return;
+    _gameOver = TRUE;
+    _gameStage = GameStageDone;
+    
+    CGSize winSize = [CCDirector sharedDirector].winSize;
+    
+    NSString *message;
+    if (win) {
+        message = @"You win!";
+    } else {
+        message = @"You lose!";
+    }
+    
+    CCLabelBMFont *label = [CCLabelBMFont labelWithString:message fntFile:@"SpaceGameFont.fnt"];
+    label.scale = 0.1;
+    label.position = ccp(winSize.width/2,
+                         winSize.height * 0.6);
+    [self addChild:label];
+    
+    CCLabelBMFont *restartLabel = [CCLabelBMFont labelWithString:@"Restart" fntFile:@"SpaceGameFont.fnt"];
+    
+    CCMenuItemLabel *restartItem = [CCMenuItemLabel
+                                    itemWithLabel:restartLabel target:self
+                                    selector:@selector(restartTapped:)];
+    restartItem.scale = 0.1;
+    restartItem.position = ccp(winSize.width/2,
+                               winSize.height * 0.4);
+    
+    CCMenu *menu = [CCMenu menuWithItems:restartItem, nil];
+    menu.position = CGPointZero;
+    [self addChild:menu];
+    
+    [restartItem runAction:[CCScaleTo
+                            actionWithDuration:0.5 scale:0.5]];
+    [label runAction:[CCScaleTo actionWithDuration:0.5 
+                                             scale:0.5]];
+    
 }
 
 - (void)spawnShip {
@@ -114,6 +176,7 @@
     }
     
     [self spawnShip];
+    _gameStage = GameStageAsteroids;
     
 }
 
@@ -200,6 +263,7 @@
 - (void)setupArrays {
     _asteroidsArray = [[SpriteArray alloc] initWithCapacity:15 spriteFrameName:@"asteroid.png" batchNode:_batchNode world:_world shapeName:@"asteroid" maxHp:1];
     _laserArray = [[SpriteArray alloc] initWithCapacity:15 spriteFrameName:@"laserbeam_blue.png" batchNode:_batchNode world:_world shapeName:@"laserbeam_blue" maxHp:1];
+    _explosions = [[ParticleSystemArray alloc] initWithFile:@"Explosion.plist" capacity:3 parent:self];
 }
 
 - (void)setupBackground {
@@ -301,6 +365,9 @@
         [self setupArrays];
         self.touchEnabled = YES;
         [self setupBackground];
+        
+        double curTime = CACurrentMediaTime();
+        _gameWonTime = curTime + 30.0;
     }
     return self;
 }
@@ -319,6 +386,9 @@
 }
 
 - (void)updateAsteroids:(ccTime)dt {
+
+    if (_gameStage != GameStageAsteroids) return;
+    
     CGSize winSize = [CCDirector sharedDirector].winSize;
     // Is it time to spawn an asteroid?
     double curTime = CACurrentMediaTime();
@@ -450,6 +520,10 @@
     //[self updateCollisions:dt];
     [self updateBackground:dt];
     [self updateBox2D:dt];
+
+    if (CACurrentMediaTime() > _gameWonTime) {
+        [self endScene:YES];
+    }
 }
 
 - (void)beginContact:(b2Contact *)contact {
@@ -462,6 +536,11 @@
     GameObject *spriteB = (__bridge GameObject *) bodyB->GetUserData();
     
     if (!spriteA.visible || !spriteB.visible) return;
+    
+    b2WorldManifold manifold;
+    contact->GetWorldManifold(&manifold);
+    b2Vec2 b2ContactPoint = manifold.points[0];
+    CGPoint contactPoint = ccp(b2ContactPoint.x * PTM_RATIO, b2ContactPoint.y * PTM_RATIO);
     
     CGSize winSize = [CCDirector sharedDirector].winSize;
     
@@ -490,15 +569,80 @@
             [laser takeHit];
             if ([enemyShip dead]) {
                 [[SimpleAudioEngine sharedEngine] playEffect:@"explosion_large.caf" pitch:1.0f pan:0.0f gain:0.25f];
+                CCParticleSystemQuad *explosion = [_explosions nextParticleSystem];
+                
+                if (enemyShip.maxHp > 3) {
+                    [self shakeScreen:6];
+                    explosion.scale *= 1.0;
+                } else if (enemyShip.maxHp > 1) {
+                    [self shakeScreen:3];
+                    explosion.scale *= 0.5;
+                } else {
+                    [self shakeScreen:1];
+                    explosion.scale *= 0.25;
+                }                
+                explosion.position = contactPoint;
+
+                [explosion resetSystem];
             } else {
                 [[SimpleAudioEngine sharedEngine] playEffect:@"explosion_small.caf" pitch:1.0f pan:0.0f gain:0.25f];
+                CCParticleSystemQuad *explosion = [_explosions nextParticleSystem];
+                explosion.scale *= 0.25;
+                explosion.position = contactPoint;
+                [explosion resetSystem];
             }
         }
+    }
+    
+    if ((fixtureA->GetFilterData().categoryBits & kCategoryShip && fixtureB->GetFilterData().categoryBits & kCategoryEnemy) ||
+        (fixtureB->GetFilterData().categoryBits & kCategoryShip && fixtureA->GetFilterData().categoryBits & kCategoryEnemy)) {
+        
+        // Determine enemy ship
+        GameObject *enemyShip = (GameObject*) spriteA;
+        if (fixtureB->GetFilterData().categoryBits & kCategoryEnemy) {
+            enemyShip = spriteB;
+        }
+        
+        if (!enemyShip.dead) {
+            
+            [[SimpleAudioEngine sharedEngine] playEffect:@"explosion_large.caf" pitch:1.0f pan:0.0f gain:0.25f];
+            
+            [self shakeScreen:1];
+            CCParticleSystemQuad *explosion = [_explosions nextParticleSystem];
+            explosion.scale *= 0.5;
+            explosion.position = contactPoint;
+            [explosion resetSystem];
+            
+            [enemyShip destroy];
+            [_ship takeHit];
+            
+            if (_ship.dead) {
+                [self endScene:NO];
+            }
+            
+        }
+        
     }
 }
 
 - (void)endContact:(b2Contact *)contact {
     
+}
+
+- (void)shakeScreen:(int)times {
+    
+    id shakeLow = [CCMoveBy
+                   actionWithDuration:0.025 position:ccp(0, -5)];
+    id shakeLowBack = [shakeLow reverse];
+    id shakeHigh =  [CCMoveBy
+                     actionWithDuration:0.025 position:ccp(0, 5)];
+    id shakeHighBack = [shakeHigh reverse];
+    id shake = [CCSequence actions:shakeLow, shakeLowBack,
+                shakeHigh, shakeHighBack, nil];
+    CCRepeat* shakeAction = [CCRepeat
+                             actionWithAction:shake times:times];
+    
+    [self runAction:shakeAction];
 }
 
 - (void) draw
@@ -512,7 +656,7 @@
 
 - (void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
     
-    if (_ship == nil) return;
+    if (_ship == nil || _ship.dead) return;
     
     CGSize winSize = [CCDirector sharedDirector].winSize;
     

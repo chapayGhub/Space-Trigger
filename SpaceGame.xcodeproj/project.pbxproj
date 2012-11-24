@@ -244,6 +244,7 @@
 		35CD707616601B8100535B83 /* bg_spacialanomaly2-ipadhd.png in Resources */ = {isa = PBXBuildFile; fileRef = 35CD707116601B8100535B83 /* bg_spacialanomaly2-ipadhd.png */; };
 		35CD707816601BF800535B83 /* Default-Landscape@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 35CD707716601BF800535B83 /* Default-Landscape@2x.png */; };
 		35E7C4D6166123050075C310 /* GameObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = 35E7C4D5166123050075C310 /* GameObject.mm */; };
+		35E7C4E21661306B0075C310 /* ParticleSystemArray.mm in Sources */ = {isa = PBXBuildFile; fileRef = 35E7C4E11661306B0075C310 /* ParticleSystemArray.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -682,6 +683,8 @@
 		35CD707716601BF800535B83 /* Default-Landscape@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-Landscape@2x.png"; sourceTree = "<group>"; };
 		35E7C4D4166123050075C310 /* GameObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameObject.h; sourceTree = "<group>"; };
 		35E7C4D5166123050075C310 /* GameObject.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GameObject.mm; sourceTree = "<group>"; };
+		35E7C4E01661306B0075C310 /* ParticleSystemArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleSystemArray.h; sourceTree = "<group>"; };
+		35E7C4E11661306B0075C310 /* ParticleSystemArray.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ParticleSystemArray.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -755,6 +758,8 @@
 				35CD70601660051700535B83 /* SpriteArray.mm */,
 				35E7C4D4166123050075C310 /* GameObject.h */,
 				35E7C4D5166123050075C310 /* GameObject.mm */,
+				35E7C4E01661306B0075C310 /* ParticleSystemArray.h */,
+				35E7C4E11661306B0075C310 /* ParticleSystemArray.mm */,
 				359D5672165EC50B00EE148E /* Resources */,
 				359D5690165EC50C00EE148E /* libs */,
 				359D588A165EC51100EE148E /* Supporting Files */,
@@ -1714,6 +1719,7 @@
 				35CD70611660051700535B83 /* SpriteArray.mm in Sources */,
 				35CD7065166007AE00535B83 /* Common.mm in Sources */,
 				35E7C4D6166123050075C310 /* GameObject.mm in Sources */,
+				35E7C4E21661306B0075C310 /* ParticleSystemArray.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
