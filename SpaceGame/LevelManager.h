@@ -1,13 +1,21 @@
 //
 //  LevelManager.h
-//  SpaceGame
+//  SpaceBlaster2
 //
-//  Created by Ray Wenderlich on 11/24/12.
-//  Copyright (c) 2012 Razeware LLC. All rights reserved.
+//  Created by JRamos on 2/23/13.
+//  Copyright (c) 2013 JRamos. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
 
+/*******************************************************************************
+ This contains an enum for the GameStates for the game. This is different than
+ the stages inside a level. These are the main overall states such as
+ 'Title Screen', 'Playing', 'GameOver'.
+ It Also contains some helper methods to advance to the next stage or next
+ level, a method to give LevelManager time to update itself, and some helper
+ methods to return properties for the current stage (or check if they exist).
+ *******************************************************************************/
 typedef enum {
     GameStateTitle = 0,
     GameStateNormal,

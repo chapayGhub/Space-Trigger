@@ -1,9 +1,9 @@
 //
 //  IntroLayer.h
-//  SpaceGame
+//  SpaceBlaster2
 //
-//  Created by Ray Wenderlich on 11/22/12.
-//  Copyright Razeware LLC 2012. All rights reserved.
+//  Created by JRamos on 2/22/13.
+//  Copyright JRamos 2013. All rights reserved.
 //
 
 

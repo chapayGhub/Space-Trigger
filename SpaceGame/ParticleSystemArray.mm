@@ -1,9 +1,9 @@
 //
 //  ParticleSystemArray.m
-//  SpaceGame
+//  SpaceBlaster2
 //
-//  Created by Ray Wenderlich on 11/24/12.
-//  Copyright (c) 2012 Razeware LLC. All rights reserved.
+//  Created by JRamos on 2/23/13.
+//  Copyright (c) 2013 JRamos. All rights reserved.
 //
 
 #import "ParticleSystemArray.h"
@@ -56,3 +56,4 @@
 }
 
 @end
+
