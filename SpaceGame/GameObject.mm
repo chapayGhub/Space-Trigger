@@ -313,4 +313,9 @@
     
 }
 
+-(float)whatHP
+{
+    return _hp;
+}
+
 @end

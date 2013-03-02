@@ -26,7 +26,7 @@
 
 - (id)initWithWorld:(b2World*)world layer:(ActionLayer*)layer {
     
-    if ((self = [super initWithSpriteFrameName:@"Boss_ship.png" world:world
+    if ((self = [super initWithSpriteFrameName:@"Big_turret.png" world:world
                                      shapeName:@"Boss_ship" maxHp:50 healthBarType:HealthBarTypeRed])) {
         _layer = layer;
         

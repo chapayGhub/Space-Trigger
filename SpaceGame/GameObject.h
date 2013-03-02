@@ -31,5 +31,6 @@ typedef enum {
 - (void)destroy;
 - (void)revive;
 - (void)takeHit;
+-(float)whatHP;
 
 @end

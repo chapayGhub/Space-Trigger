@@ -19,18 +19,20 @@
 #import "ParticleSystemArray.h"
 #import "LevelManager.h"
 #import "BossShip.h"
+#import "BigTurret.h"
 
 //Constants to make referring to shape categories easier in code.
 #define kCategoryShip       0x1
 #define kCategoryShipLaser  0x2
 #define kCategoryEnemy      0x4
 #define kCategoryPowerup    0x8
+#define kCategoryPowerupMultiple    0x10
 
 //Creates an enumeration to keep track of the two different game stages-
 //the enemy spawning stage, and the game over stage.
 enum GameStage {
     GameStageTitle = 0,
-    GameStageAsteroids,
+    GameStageEnemys,
     GameStageDone
 };
 
@@ -49,6 +51,9 @@ enum GameStage {
     //Play button
     CCMenuItemLabel * _playItem;
     
+    //Tutorial button
+    CCMenuItemLabel * _tutorialItem;
+    
     //Variables for loading sprite sheet
     CCSpriteBatchNode * _batchNode;
     GameObject * _ship;
@@ -59,12 +64,17 @@ enum GameStage {
     
     //Variable to keep track of the next enemy should spawn
     double _nextEnemySpawn;
+    double _nextEnemyFlyerSpawn;
     
-    //Variable for the array of asteroids
-    SpriteArray * _asteroidsArray;
+    //Variable for the array of enemys
+    SpriteArray * _enemysArray;
     
     //Variable for the array of lasers
     SpriteArray * _laserArray;
+    
+    //Determines if you are in the act of firing weapons
+    BOOL _firing;
+    int _timerLasers;
     
     //Parallax scrolling variables
     CCParallaxNode * _backgroundNode;
@@ -98,6 +108,7 @@ enum GameStage {
     
     CCLabelBMFont *_levelIntroLabel1;
     CCLabelBMFont *_levelIntroLabel2;
+    CCLabelBMFont *_tutorialLabel;
     
     //Variables for alien ships
     SpriteArray * _alienArray;
@@ -111,9 +122,12 @@ enum GameStage {
     SpriteArray * _enemyLasers;
     
     //Power-ups
-    SpriteArray * _powerups;
-    double _nextPowerupSpawn;
-    int _powerup;
+    SpriteArray * _powerupBolt;
+    double _nextPowerupBoltSpawn;
+    int _powerupSingle;
+    SpriteArray * _powerupMultiple;
+    double _nextPowerupMultipleSpawn;
+
     
     //Invinsibility/Boost effect
     BOOL _invincible;
@@ -123,13 +137,26 @@ enum GameStage {
     BossShip * _boss;
     BOOL _wantNextStage;
     
+    //Big Turret ships
+    BigTurret * _bigTurret;
+    
     //Boss cannons
     SpriteArray * _cannonBalls;
     
+    //Enemy Flyer
+    SpriteArray * _enemyFlyerArray;
+    GameObject * _enemyFlyer;
+    GameObject * _enemyFlyer2;
+    GameObject * _enemyFlyer3;
+    GameObject * _enemyFlyer4;
+    GameObject * _enemyFlyer5;
+    GameObject * _enemyFlyer6;
+    GameObject * _enemyFlyer7;
+    GameObject * _enemyFlyer8;
     
-    
-    
-    
+    //Variables for ship weapons
+    BOOL _single;
+    BOOL _multiple;
     
 }
 
@@ -222,7 +249,7 @@ enum GameStage {
     _playItem = [CCMenuItemLabel itemWithLabel:playLabel target:self
                                       selector:@selector(playTapped:)];
     _playItem.scale = 0;
-    _playItem.position = ccp(winSize.width/2, winSize.height * 0.3);
+    _playItem.position = ccp(winSize.width/2, winSize.height * 0.35);
     
     CCMenu *menu = [CCMenu menuWithItems:_playItem, nil];
     menu.position = CGPointZero;
@@ -243,6 +270,27 @@ enum GameStage {
      at CGPointZero so that the coordinates of menu items are with respect to the
      bottom left of the screen.
      *******************************************************************************/
+    
+    /*******************************************************************************
+     This creates a CCLabelBMFont that reads "Tutorial"
+     *******************************************************************************/
+    CCLabelBMFont *tutorialLabel = [CCLabelBMFont labelWithString:@"Tutorial" fntFile:fontName];
+    _tutorialItem = [CCMenuItemLabel itemWithLabel:tutorialLabel target:self
+                                      selector:@selector(tutorialTapped:)];
+    _tutorialItem.scale = 0;
+    _tutorialItem.position = ccp(winSize.width/2, winSize.height * 0.2);
+    
+    menu = [CCMenu menuWithItems:_tutorialItem, nil];
+    menu.position = CGPointZero;
+    [self addChild:menu];
+    
+    [_tutorialItem runAction:
+     [CCSequence actions:
+      [CCDelayTime actionWithDuration:2.0],
+      [CCEaseOut actionWithAction:
+       [CCScaleTo actionWithDuration:0.5 scale:0.5] rate:4.0],
+      nil]];
+    
     
 }
 
@@ -351,11 +399,12 @@ enum GameStage {
     //associated with it—and set hit points for the ship
     _ship = [[GameObject alloc] initWithSpriteFrameName:@"fighter1.png"
                                                   world:_world
-                                              shapeName:@"SpaceFlier_sm_1"
+                                              shapeName:@"fighter1"
                                                   maxHp:10
                                           healthBarType:HealthBarTypeGreen];
     _ship.position = ccp(-_ship.contentSize.width/2,
                          winSize.height * 0.5);
+    
     //It is important to call revive after setting the position, because revive
     //sets the initial position of the Box2D body based on the sprite’s position.
     [_ship revive];
@@ -401,7 +450,6 @@ enum GameStage {
      *******************************************************************************/
     
     
-    
 }
 
 
@@ -415,7 +463,7 @@ enum GameStage {
     
     [[SimpleAudioEngine sharedEngine] playEffect:@"powerup.caf"];
     
-    NSArray * nodes = @[_titleLabel1, _titleLabel2, _playItem];
+    NSArray * nodes = @[_titleLabel1, _titleLabel2, _playItem, _tutorialItem];
     for (CCNode *node in nodes) {
         [node runAction:
          [CCSequence actions:
@@ -426,9 +474,33 @@ enum GameStage {
     }
     
     [self spawnShip];
-    //_gameStage = GameStageAsteroids;
+    //_gameStage = GameStageenemys;
     [_levelManager nextStage];
     [self newStageStarted];
+    //start with singleshot
+    _single = YES;
+    
+}
+
+- (void)tutorialTapped:(id)sender {
+    
+    [[SimpleAudioEngine sharedEngine] playEffect:@"powerup.caf"];
+    
+    NSArray * nodes = @[_titleLabel1, _titleLabel2, _playItem, _tutorialItem];
+    for (CCNode *node in nodes) {
+        [node runAction:
+         [CCSequence actions:
+          [CCEaseOut actionWithAction:
+           [CCScaleTo actionWithDuration:0.5 scale:0] rate:4.0],
+          [CCCallFuncN actionWithTarget:self selector:@selector(removeNode:)],
+          nil]];
+    }
+    
+    [self spawnShip];
+    [_levelManager nextStage];
+    //_gameStage = GameStageenemys;
+    //start with singleshot
+    _single = YES;
     
 }
 
@@ -504,7 +576,7 @@ enum GameStage {
     float accelY = rollingY;
     float accelZ = rollingZ;
     
-    NSLog(@"accelX: %f, accelY: %f, accelZ: %f", accelX, accelY, accelZ);
+    //NSLog(@"accelX: %f, accelY: %f, accelZ: %f", accelX, accelY, accelZ);
     
     CGSize winSize = [CCDirector sharedDirector].winSize;
     
@@ -537,7 +609,7 @@ enum GameStage {
     _shipPointsPerSecY = pointsPerSecX;
     
     
-    NSLog(@"xpoints %f, ypoints %f", pointsPerSecX, pointsPerSecY);
+    //NSLog(@"xpoints %f, ypoints %f", pointsPerSecX, pointsPerSecY);
     
     
     _shipPointsPerSecX = pointsPerSecY;
@@ -563,8 +635,7 @@ enum GameStage {
     newX = MIN(MAX(newX, minX), maxX);
     
     _ship.position = ccp(newX, newY);
-    NSLog(@"newX %f, newY %f",
-          newX, newY);
+    //NSLog(@"newX %f, newY %f",newX, newY);
 }
 
 /*******************************************************************************
@@ -574,12 +645,12 @@ enum GameStage {
  *******************************************************************************/
 - (void)updateEnemy:(ccTime)dt {
     
-    //This makes it so that asteroids don’t spawn before Play. (old)
-    //We don’t want to spawn asteroids if not in the normal game state, or if the
+    //This makes it so that enemys don’t spawn before Play. (old)
+    //We don’t want to spawn enemys if not in the normal game state, or if the
     //current stage doesn’t have the SpawnEnemy property.
-    //if (_gameStage != GameStageAsteroids) return;
+    //if (_gameStage != GameStageEnemys) return;
     if (_levelManager.gameState != GameStateNormal) return;
-    if (![_levelManager boolForProp:@"SpawnAsteroids"]) return;
+    if (![_levelManager boolForProp:@"SpawnEnemys"]) return;
     
     
     CGSize winSize = [CCDirector sharedDirector].winSize;
@@ -605,92 +676,83 @@ enum GameStage {
         float moveDurationHigh = [_levelManager floatForProp:@"AMoveDurationHigh"];
         float randDuration = randomValueBetween(moveDurationLow, moveDurationHigh);
         
-        // Create a new asteroid sprite
+        // Create a new enemy sprite
         //Here we use the helper method to get the next available sprite from the
         //array, stop any actions that may be currently running on it, and set it
         //to visible.
-        GameObject *asteroid = [_asteroidsArray nextSprite];
-        [asteroid stopAllActions];
-        asteroid.visible = YES;
+        GameObject *enemy = [_enemysArray nextSprite];
+        [enemy stopAllActions];
+        enemy.visible = YES;
         
-        GameObject *asteroid2 = [_asteroidsArray nextSprite];
-        [asteroid2 stopAllActions];
-        asteroid2.visible = YES;
+        GameObject *enemy2 = [_enemysArray nextSprite];
+        [enemy2 stopAllActions];
+        enemy2.visible = YES;
         
-        GameObject *asteroid3 = [_asteroidsArray nextSprite];
-        [asteroid3 stopAllActions];
-        asteroid3.visible = YES;
+        GameObject *enemy3 = [_enemysArray nextSprite];
+        [enemy3 stopAllActions];
+        enemy3.visible = YES;
         
-        GameObject *asteroid4 = [_asteroidsArray nextSprite];
-        [asteroid4 stopAllActions];
-        asteroid4.visible = YES;
+        GameObject *enemy4 = [_enemysArray nextSprite];
+        [enemy4 stopAllActions];
+        enemy4.visible = YES;
         
-        GameObject *asteroid5 = [_asteroidsArray nextSprite];
-        [asteroid5 stopAllActions];
-        asteroid5.visible = YES;
+        GameObject *enemy5 = [_enemysArray nextSprite];
+        [enemy5 stopAllActions];
+        enemy5.visible = YES;
         
         // Set its position to be offscreen to the right
-        asteroid.position = ccp(winSize.width+asteroid.contentSize.width/2, randY);
-        asteroid2.position = ccp(winSize.width+asteroid.contentSize.width+80/2, randY);
-        asteroid3.position = ccp(winSize.width+asteroid.contentSize.width+80+80/2, randY);
-        asteroid4.position = ccp(winSize.width+asteroid.contentSize.width+80+80+80/2, randY);
-        asteroid5.position = ccp(winSize.width+asteroid.contentSize.width+80+80+80+80/2, randY);
+        enemy.position = ccp(winSize.width+enemy.contentSize.width/2, randY);
+        enemy2.position = ccp(winSize.width+enemy.contentSize.width+80/2, randY);
+        enemy3.position = ccp(winSize.width+enemy.contentSize.width+80+80/2, randY);
+        enemy4.position = ccp(winSize.width+enemy.contentSize.width+80+80+80/2, randY);
+        enemy5.position = ccp(winSize.width+enemy.contentSize.width+80+80+80+80/2, randY);
         
         // Set it's size to be one of X random sizes
         int randNum = arc4random() % 1;
         if (randNum == 0) {
-            asteroid.scale = 1.2;
-            asteroid.maxHp = 2;
-            asteroid2.scale = 1.2;
-            asteroid2.maxHp = 2;
-            asteroid3.scale = 1.2;
-            asteroid3.maxHp = 2;
-            asteroid4.scale = 1.2;
-            asteroid4.maxHp = 2;
-            asteroid5.scale = 1.2;
-            asteroid5.maxHp = 2;
+            enemy.scale = 1.2;
+            enemy.maxHp = 2;
+            enemy2.scale = 1.2;
+            enemy2.maxHp = 2;
+            enemy3.scale = 1.2;
+            enemy3.maxHp = 2;
+            enemy4.scale = 1.2;
+            enemy4.maxHp = 2;
+            enemy5.scale = 1.2;
+            enemy5.maxHp = 2;
         }
-        //    else if (randNum == 1) {
-        //    asteroid.scale = 0.5;
-        //    asteroid.maxHp = 4;
-        //    asteroid2.scale = 1.2;
-        //    asteroid2.maxHp = 3;
-        //} else {
-        //    asteroid.scale = 1.0;
-        //    asteroid.maxHp = 6;
-        //}
-        [asteroid revive];
-        [asteroid2 revive];
-        [asteroid3 revive];
-        [asteroid4 revive];
-        [asteroid5 revive];
+        [enemy revive];
+        [enemy2 revive];
+        [enemy3 revive];
+        [enemy4 revive];
+        [enemy5 revive];
         
         // Move it offscreen to the left, and when it's
         // When done set the sprite from the batch node to invisible
         //(using invisiNode method)
-        [asteroid runAction:
+        [enemy runAction:
          [CCSequence actions:
-          [CCMoveBy actionWithDuration:randDuration position:ccp(-winSize.width-asteroid.contentSize.width, 0)],
+          [CCMoveBy actionWithDuration:randDuration position:ccp(-winSize.width-enemy.contentSize.width-500, 0)],
           [CCCallFuncN actionWithTarget:self selector:@selector(invisNode:)],
           nil]];
-        [asteroid2 runAction:
+        [enemy2 runAction:
          [CCSequence actions:
-          [CCMoveBy actionWithDuration:randDuration position:ccp(-winSize.width-asteroid.contentSize.width, 0)],
+          [CCMoveBy actionWithDuration:randDuration position:ccp(-winSize.width-enemy.contentSize.width-500, 0)],
           [CCCallFuncN actionWithTarget:self selector:@selector(invisNode:)],
           nil]];
-        [asteroid3 runAction:
+        [enemy3 runAction:
          [CCSequence actions:
-          [CCMoveBy actionWithDuration:randDuration position:ccp(-winSize.width-asteroid.contentSize.width, 0)],
+          [CCMoveBy actionWithDuration:randDuration position:ccp(-winSize.width-enemy.contentSize.width-500, 0)],
           [CCCallFuncN actionWithTarget:self selector:@selector(invisNode:)],
           nil]];
-        [asteroid4 runAction:
+        [enemy4 runAction:
          [CCSequence actions:
-          [CCMoveBy actionWithDuration:randDuration position:ccp(-winSize.width-asteroid.contentSize.width, 0)],
+          [CCMoveBy actionWithDuration:randDuration position:ccp(-winSize.width-enemy.contentSize.width-500, 0)],
           [CCCallFuncN actionWithTarget:self selector:@selector(invisNode:)],
           nil]];
-        [asteroid5 runAction:
+        [enemy5 runAction:
          [CCSequence actions:
-          [CCMoveBy actionWithDuration:randDuration position:ccp(-winSize.width-asteroid.contentSize.width, 0)],
+          [CCMoveBy actionWithDuration:randDuration position:ccp(-winSize.width-enemy.contentSize.width-500, 0)],
           [CCCallFuncN actionWithTarget:self selector:@selector(invisNode:)],
           nil]];
         
@@ -707,33 +769,243 @@ enum GameStage {
          [cache spriteFrameByName:@"foe2.png"]];
         animation.delayPerUnit = 0.2;
         
-        [asteroid runAction:
+        [enemy runAction:
          [CCRepeatForever actionWithAction:
           [CCAnimate actionWithAnimation:animation]]];
-        [asteroid2 runAction:
+        [enemy2 runAction:
          [CCRepeatForever actionWithAction:
           [CCAnimate actionWithAnimation:animation]]];
-        [asteroid3 runAction:
+        [enemy3 runAction:
          [CCRepeatForever actionWithAction:
           [CCAnimate actionWithAnimation:animation]]];
-        [asteroid4 runAction:
+        [enemy4 runAction:
          [CCRepeatForever actionWithAction:
           [CCAnimate actionWithAnimation:animation]]];
-        [asteroid5 runAction:
+        [enemy5 runAction:
          [CCRepeatForever actionWithAction:
           [CCAnimate actionWithAnimation:animation]]];
-        
+
         
         //Enemies shoot
-        for (GameObject *asteroid in _asteroidsArray.array) {
-            if (asteroid.visible) {
+        for (GameObject *enemy in _enemysArray.array) {
+            if (enemy.visible) {
                 if (arc4random() % 50 == 0) {
                     [self shootEnemyLaserFromPosition:
-                     asteroid.position];
+                     enemy.position];
                 }
             }
         }
         
+    }
+}
+
+
+- (void)updateEnemyFlyer:(ccTime)dt {
+    
+    if (_levelManager.gameState != GameStateNormal) return;
+    if (![_levelManager boolForProp:@"SpawnEnemyFlyer"]) return;
+    
+    
+    CGSize winSize = [CCDirector sharedDirector].winSize;
+    
+    double curTime = CACurrentMediaTime();
+    if (curTime > _nextEnemyFlyerSpawn) {
+        
+        // Figure out the next time to spawn an enemy
+        _nextEnemyFlyerSpawn = INFINITY;
+
+        
+        // Figure out a random Y value to spawn at
+        float randY = randomValueBetween(50.0, winSize.height-50.0);
+    
+        
+        // Create a new enemyflyer sprite
+        //Here we use the helper method to get the next available sprite from the
+        //array, stop any actions that may be currently running on it, and set it
+        //to visible.
+        _enemyFlyer = [_enemyFlyerArray nextSprite];
+        [_enemyFlyer stopAllActions];
+        _enemyFlyer.visible = YES;
+        _enemyFlyer2 = [_enemyFlyerArray nextSprite];
+        [_enemyFlyer2 stopAllActions];
+        _enemyFlyer2.visible = YES;
+        _enemyFlyer3 = [_enemyFlyerArray nextSprite];
+        [_enemyFlyer3 stopAllActions];
+        _enemyFlyer3.visible = YES;
+        _enemyFlyer4 = [_enemyFlyerArray nextSprite];
+        [_enemyFlyer4 stopAllActions];
+        _enemyFlyer4.visible = YES;
+        
+        _enemyFlyer5 = [_enemyFlyerArray nextSprite];
+        [_enemyFlyer5 stopAllActions];
+        _enemyFlyer5.visible = YES;
+        _enemyFlyer6 = [_enemyFlyerArray nextSprite];
+        [_enemyFlyer6 stopAllActions];
+        _enemyFlyer6.visible = YES;
+        _enemyFlyer7 = [_enemyFlyerArray nextSprite];
+        [_enemyFlyer7 stopAllActions];
+        _enemyFlyer7.visible = YES;
+        _enemyFlyer8 = [_enemyFlyerArray nextSprite];
+        [_enemyFlyer8 stopAllActions];
+        _enemyFlyer8.visible = YES;
+        
+        
+        // Set its position to be offscreen to the right
+        _enemyFlyer.position = ccp(winSize.width+_enemyFlyer.contentSize.width/2, randY);
+        _enemyFlyer2.position = ccp(winSize.width+_enemyFlyer.contentSize.width/2, randY);
+        _enemyFlyer3.position = ccp(winSize.width+_enemyFlyer.contentSize.width/2, randY);
+        _enemyFlyer4.position = ccp(winSize.width+_enemyFlyer.contentSize.width/2, randY);
+        
+        _enemyFlyer5.position = ccp(winSize.width+_enemyFlyer.contentSize.width/2, winSize.height - randY);
+        _enemyFlyer6.position = ccp(winSize.width+_enemyFlyer.contentSize.width/2, winSize.height - randY);
+        _enemyFlyer7.position = ccp(winSize.width+_enemyFlyer.contentSize.width/2, winSize.height - randY);
+        _enemyFlyer8.position = ccp(winSize.width+_enemyFlyer.contentSize.width/2, winSize.height - randY);
+        
+        
+        _enemyFlyer.scale = 1.2;
+        _enemyFlyer.maxHp = 10;
+        _enemyFlyer2.scale = 1.2;
+        _enemyFlyer2.maxHp = 10;
+        _enemyFlyer3.scale = 1.2;
+        _enemyFlyer3.maxHp = 10;
+        _enemyFlyer4.scale = 1.2;
+        _enemyFlyer4.maxHp = 10;
+        
+        _enemyFlyer5.scale = 1.2;
+        _enemyFlyer5.maxHp = 10;
+        _enemyFlyer6.scale = 1.2;
+        _enemyFlyer6.maxHp = 10;
+        _enemyFlyer7.scale = 1.2;
+        _enemyFlyer7.maxHp = 10;
+        _enemyFlyer8.scale = 1.2;
+        _enemyFlyer8.maxHp = 10;
+        
+        [_enemyFlyer revive];
+        [_enemyFlyer2 revive];
+        [_enemyFlyer3 revive];
+        [_enemyFlyer4 revive];
+        
+        [_enemyFlyer5 revive];
+        [_enemyFlyer6 revive];
+        [_enemyFlyer7 revive];
+        [_enemyFlyer8 revive];
+        
+        
+        [_enemyFlyer runAction:
+         [CCSequence actions:
+          [CCMoveTo actionWithDuration:2
+                              position:ccp(winSize.width*.7, winSize.height * .2)],
+        nil]];
+        [_enemyFlyer2 runAction:
+         [CCSequence actions:
+          [CCMoveTo actionWithDuration:2
+                              position:ccp((winSize.width+100)*.7 , (winSize.height+375) * .2)],
+          nil]];
+        [_enemyFlyer3 runAction:
+         [CCSequence actions:
+          [CCMoveTo actionWithDuration:2
+                              position:ccp((winSize.width+100)*.7, (winSize.height-375) * .2)],
+          nil]];
+        [_enemyFlyer4 runAction:
+         [CCSequence actions:
+          [CCMoveTo actionWithDuration:2
+                              position:ccp((winSize.width+200)*.7, winSize.height * .2)],
+          nil]];
+        
+        [_enemyFlyer5 runAction:
+         [CCSequence actions:
+          [CCMoveTo actionWithDuration:2
+                              position:ccp((winSize.width)*.7, winSize.height * .8)],
+          nil]];
+        [_enemyFlyer6 runAction:
+         [CCSequence actions:
+          [CCMoveTo actionWithDuration:2
+                              position:ccp((winSize.width+100)*.7, (winSize.height+100)* .8)],
+          nil]];
+        [_enemyFlyer7 runAction:
+         [CCSequence actions:
+          [CCMoveTo actionWithDuration:2
+                              position:ccp((winSize.width+100)*.7, (winSize.height-100) * .8)],
+          nil]];
+        [_enemyFlyer8 runAction:
+         [CCSequence actions:
+          [CCMoveTo actionWithDuration:2
+                              position:ccp((winSize.width+200)*.7, winSize.height * .8)],
+          nil]];
+        
+        
+        //Animate this enemy ship
+        CCSpriteFrameCache * cache =
+        [CCSpriteFrameCache sharedSpriteFrameCache];
+        
+        CCAnimation *animation = [CCAnimation animation];
+        [animation addSpriteFrame:
+         [cache spriteFrameByName:@"foe3.png"]];
+        [animation addSpriteFrame:
+         [cache spriteFrameByName:@"foe4.png"]];
+        [animation addSpriteFrame:
+         [cache spriteFrameByName:@"foe5.png"]];
+        [animation addSpriteFrame:
+         [cache spriteFrameByName:@"foe6.png"]];
+        [animation addSpriteFrame:
+         [cache spriteFrameByName:@"foe5.png"]];
+        [animation addSpriteFrame:
+         [cache spriteFrameByName:@"foe4.png"]];
+        [animation addSpriteFrame:
+         [cache spriteFrameByName:@"foe3.png"]];
+        animation.delayPerUnit = 0.2;
+        
+        [_enemyFlyer runAction:
+         [CCRepeatForever actionWithAction:
+          [CCAnimate actionWithAnimation:animation]]];
+        [_enemyFlyer2 runAction:
+         [CCRepeatForever actionWithAction:
+          [CCAnimate actionWithAnimation:animation]]];
+        [_enemyFlyer3 runAction:
+         [CCRepeatForever actionWithAction:
+          [CCAnimate actionWithAnimation:animation]]];
+        [_enemyFlyer4 runAction:
+         [CCRepeatForever actionWithAction:
+          [CCAnimate actionWithAnimation:animation]]];
+        
+        [_enemyFlyer5 runAction:
+         [CCRepeatForever actionWithAction:
+          [CCAnimate actionWithAnimation:animation]]];
+        [_enemyFlyer6 runAction:
+         [CCRepeatForever actionWithAction:
+          [CCAnimate actionWithAnimation:animation]]];
+        [_enemyFlyer7 runAction:
+         [CCRepeatForever actionWithAction:
+          [CCAnimate actionWithAnimation:animation]]];
+        [_enemyFlyer8 runAction:
+         [CCRepeatForever actionWithAction:
+          [CCAnimate actionWithAnimation:animation]]];
+        
+        //Enemies shoot
+        [self schedule:@selector(handleTimer) interval:2.5];
+        
+    }
+}
+
+- (void)handleTimer {
+    [self shootEnemyLaserFromPosition:_enemyFlyer.position];
+    [self shootEnemyLaserFromPosition:_enemyFlyer2.position];
+    [self shootEnemyLaserFromPosition:_enemyFlyer3.position];
+    [self shootEnemyLaserFromPosition:_enemyFlyer4.position];
+    [self shootEnemyLaserFromPosition:_enemyFlyer5.position];
+    [self shootEnemyLaserFromPosition:_enemyFlyer6.position];
+    [self shootEnemyLaserFromPosition:_enemyFlyer7.position];
+    [self shootEnemyLaserFromPosition:_enemyFlyer8.position];
+    
+}
+
+-(void)handleTimerOff
+{
+    _timerLasers++;
+    if(_timerLasers == 8){
+        [self unschedule:@selector(handleTimer)];
+        _timerLasers = 0;
+        _wantNextStage = YES;
     }
 }
 
@@ -746,27 +1018,41 @@ enum GameStage {
  * @abstract    <# abstract #>
  * @description
  -------------------------------------------------------------------------------
- This loops through each laser, and each asteroid, and checks if their bounding
+ This loops through each laser, and each enemy, and checks if their bounding
  boxes collide (and both are visible).
  If so, it plays an explosion sound effect, and makes both of them invisible to
  “destroy” them.
  *******************************************************************************/
 - (void)updateCollisions:(ccTime)dt {
     
+    /* OLD CODE
+    
     for (CCSprite *laser in _laserArray.array) {
         if (!laser.visible) continue;
         
-        for (CCSprite *asteroid in _asteroidsArray.array) {
-            if (!asteroid.visible) continue;
-            if (CGRectIntersectsRect(asteroid.boundingBox, laser.boundingBox)) {
+        for (CCSprite *enemy in _enemysArray.array) {
+            if (!enemy.visible) continue;
+            if (CGRectIntersectsRect(enemy.boundingBox, laser.boundingBox)) {
                 
                 [[SimpleAudioEngine sharedEngine] playEffect:@"explosion_large.caf" pitch:1.0f pan:0.0f gain:0.25f];
-                asteroid.visible = NO;
+                enemy.visible = NO;
                 laser.visible = NO;
                 break;
             }
         }
+        for (CCSprite *enemyFlyer in _enemyFlyerArray.array) {
+            if (!enemyFlyer.visible) continue;
+            if (CGRectIntersectsRect(enemyFlyer.boundingBox, laser.boundingBox)) {
+                
+                [[SimpleAudioEngine sharedEngine] playEffect:@"explosion_large.caf" pitch:1.0f pan:0.0f gain:0.25f];
+                enemyFlyer.visible = NO;
+                laser.visible = NO;
+                break;
+                [self handleTimerOff];
+            }
+        }
     }
+     */
     
 }
 
@@ -826,6 +1112,19 @@ enum GameStage {
      playEffect:@"boss.caf"];
 }
 
+-(void)spawnBigTurret
+{
+    CGSize winSize = [CCDirector sharedDirector].winSize;
+    _bigTurret.position = ccp(winSize.width*1.2,
+                         winSize.height*1.2);
+    
+    [_bigTurret revive];
+    
+    [self shakeScreen:30];
+    [[SimpleAudioEngine sharedEngine]
+     playEffect:@"boss.caf"];
+}
+
 //newStageStarted checks to see if the game has advanced to the GameStateDone state,
 //and if so calls the endScene method to display the Game Over text and Restart menu.
 - (void)newStageStarted {
@@ -835,8 +1134,11 @@ enum GameStage {
     else if ([_levelManager boolForProp:@"SpawnLevelIntro"]) {
         [self doLevelIntro];
     }
-    if ([_levelManager hasProp:@"SpawnBoss"]) {
+    if ([_levelManager boolForProp:@"SpawnBoss"]) {
         [self spawnBoss];
+    }
+    if ([_levelManager boolForProp:@"SpawnBigTurret"]){
+        [self spawnBigTurret];
     }
     
     
@@ -849,6 +1151,8 @@ enum GameStage {
     NSString *message1 = [NSString stringWithFormat:@"Level %d",
                           _levelManager.curLevelIdx+1];
     NSString *message2 = [_levelManager stringForProp:@"LText"];
+    
+    NSString *message3 = [_levelManager stringForProp:@"LText"];
     
     _levelIntroLabel1 = [CCLabelBMFont labelWithString:message1
                                                fntFile:@"SpaceGameFont.fnt"];
@@ -881,6 +1185,23 @@ enum GameStage {
        [CCScaleTo actionWithDuration:0.5 scale:0] rate:4.0],
       [CCCallFuncN actionWithTarget:self selector:@selector(removeNode:)],
       nil]];
+    
+    
+    _tutorialItem = [CCLabelBMFont labelWithString:message3
+                                               fntFile:@"SpaceGameFont.fnt"];
+    _tutorialItem.position = ccp(winSize.width/2, winSize.height * 0.8);
+    _tutorialItem.scale = 0;
+    [self addChild:_tutorialItem z:100];
+    
+    [_tutorialItem runAction:
+     [CCSequence actions:
+      [CCEaseOut actionWithAction:
+       [CCScaleTo actionWithDuration:0.5 scale:0.5] rate:4.0],
+      [CCDelayTime actionWithDuration:3.0],
+      [CCEaseOut actionWithAction:
+       [CCScaleTo actionWithDuration:0.5 scale:0] rate:4.0],
+      [CCCallFuncN actionWithTarget:self selector:@selector(removeNode:)],
+      nil]];
 }
 
 - (void)shootEnemyLaserFromPosition:(CGPoint)position {
@@ -891,12 +1212,53 @@ enum GameStage {
     
     [[SimpleAudioEngine sharedEngine] playEffect:@"laser_enemy.caf" pitch:1.0f pan:0.0f gain:0.25f];
     shipLaser.position = position;
+    shipLaser.rotation = 0;
     [shipLaser revive];
     [shipLaser stopAllActions];
     [shipLaser runAction:
      [CCSequence actions:
       [CCMoveBy actionWithDuration:2.2
                           position:ccp(-winSize.width, 0)],
+      [CCCallFuncN actionWithTarget:self
+                           selector:@selector(invisNode:)],
+      nil]];
+}
+
+- (void)shootEnemyVerticalDownLaserFromPosition:(CGPoint)position {
+    CGSize winSize = [CCDirector sharedDirector].winSize;
+    GameObject *shipLaser = [_enemyLasers nextSprite];
+    
+    
+    
+    [[SimpleAudioEngine sharedEngine] playEffect:@"laser_enemy.caf" pitch:1.0f pan:0.0f gain:0.25f];
+    shipLaser.position = position;
+    shipLaser.rotation = 90;
+    [shipLaser revive];
+    [shipLaser stopAllActions];
+    [shipLaser runAction:
+     [CCSequence actions:
+      [CCMoveBy actionWithDuration:2.2
+                          position:ccp(0, -winSize.height)],
+      [CCCallFuncN actionWithTarget:self
+                           selector:@selector(invisNode:)],
+      nil]];
+}
+
+- (void)shootEnemyVerticalUpLaserFromPosition:(CGPoint)position {
+    CGSize winSize = [CCDirector sharedDirector].winSize;
+    GameObject *shipLaser = [_enemyLasers nextSprite];
+    
+    
+    
+    [[SimpleAudioEngine sharedEngine] playEffect:@"laser_enemy.caf" pitch:1.0f pan:0.0f gain:0.25f];
+    shipLaser.position = position;
+    shipLaser.rotation = 90;
+    [shipLaser revive];
+    [shipLaser stopAllActions];
+    [shipLaser runAction:
+     [CCSequence actions:
+      [CCMoveBy actionWithDuration:2.2
+                          position:ccp(0, winSize.height)],
       [CCCallFuncN actionWithTarget:self
                            selector:@selector(invisNode:)],
       nil]];
@@ -934,7 +1296,7 @@ enum GameStage {
 {
     
     if (_levelManager.gameState != GameStateNormal) return;
-    if (![_levelManager hasProp:@"SpawnAlienSwarm"])
+    if (![_levelManager boolForProp:@"SpawnAlienSwarm"])
         return;
     
     CGSize winSize = [CCDirector sharedDirector].winSize;
@@ -1003,38 +1365,67 @@ enum GameStage {
 }
 
 /*******************************************************************************
- * @method      updatePowerups
+ * @method      updatePowerupBolt
  * @abstract    <# abstract #>
  * @description
  -------------------------------------------------------------------------------
  This checks to see when it’s time to spawn a power up, and when it’s time it
  grabs the next available power up and moves it offscreen to the left.
  *******************************************************************************/
-- (void)updatePowerups:(ccTime)dt {
+- (void)updatePowerupBolt:(ccTime)dt {
     
     if (_levelManager.gameState != GameStateNormal) return;
-    if (![_levelManager boolForProp:@"SpawnPowerups"])
+    if (![_levelManager boolForProp:@"SpawnPowerupBolt"])
         return;
     
     CGSize winSize = [CCDirector sharedDirector].winSize;
     
     double curTime = CACurrentMediaTime();
-    if (curTime > _nextPowerupSpawn) {
-        _nextPowerupSpawn = curTime +
-        [_levelManager floatForProp:@"PSpawnSecs"];
+    if (curTime > _nextPowerupBoltSpawn) {
+        _nextPowerupBoltSpawn = curTime +
+        [_levelManager floatForProp:@"PBoltSpawnSecs"];
         
-        GameObject * powerup = [_powerups nextSprite];
-        powerup.position = ccp(winSize.width,
-                               //randomValueBetween(0, winSize.height));
-                               winSize.height/2);
+        GameObject * powerup = [_powerupBolt nextSprite];
+        powerup.position = ccp(winSize.width + 200,
+                               randomValueBetween(0, winSize.height));
+                               //winSize.height/2);
         [powerup revive];
         [powerup runAction:
          [CCSequence actions:
-          [CCMoveBy actionWithDuration:15
-                              position:ccp(-winSize.width*1.5, 0)],
+          [CCMoveBy actionWithDuration:20],
           [CCCallFuncN actionWithTarget:self
                                selector:@selector(invisNode:)],
           nil]];
+        
+        CCSpriteFrameCache * cache =
+        [CCSpriteFrameCache sharedSpriteFrameCache];
+        
+        CCAnimation *animation = [CCAnimation animation];
+        [animation addSpriteFrame:
+         [cache spriteFrameByName:@"powerup.png"]];
+        [animation addSpriteFrame:
+         [cache spriteFrameByName:@"powerup2.png"]];
+        animation.delayPerUnit = 0.2;
+        
+        [powerup runAction:
+         [CCRepeatForever actionWithAction:
+          [CCAnimate actionWithAnimation:animation]]];
+        
+        id move1 = [CCMoveBy
+                    actionWithDuration:.5 position:ccp(-50, -8)];
+        id move2 = [CCMoveBy
+                    actionWithDuration:.5 position:ccp(-50, 8)];
+        id move3 =  [CCMoveBy
+                     actionWithDuration:.5 position:ccp(-50, 8)];
+        id move4 =  [CCMoveBy
+                     actionWithDuration:.5 position:ccp(-50, -8)];
+        id shake = [CCSequence actions:move1, move2, move3, move4, nil];
+        CCRepeat* shakeAction = [CCRepeat
+                                 actionWithAction:shake times:-1];
+        
+        [powerup runAction:shakeAction];
+
+        
     }
     
 }
@@ -1043,6 +1434,73 @@ enum GameStage {
     for (CCParticleSystemQuad * particleSystem in _boostEffects.array) {
         particleSystem.position = _ship.position;
     }
+}
+
+/*******************************************************************************
+ * @method      updatePowerupMultiple
+ * @abstract    <# abstract #>
+ * @description
+ -------------------------------------------------------------------------------
+ This checks to see when it’s time to spawn a power up, and when it’s time it
+ grabs the next available power up and moves it offscreen to the left.
+ *******************************************************************************/
+- (void)updatePowerupMultiple:(ccTime)dt {
+    
+    if (_levelManager.gameState != GameStateNormal) return;
+    if (![_levelManager boolForProp:@"SpawnPowerupMultiple"])
+        return;
+    if (_multiple) return;
+    
+    CGSize winSize = [CCDirector sharedDirector].winSize;
+    
+    double curTime = CACurrentMediaTime();
+    if (curTime > _nextPowerupMultipleSpawn) {
+        _nextPowerupMultipleSpawn = curTime +
+        [_levelManager floatForProp:@"PMultipleSpawnSecs"];
+        
+        GameObject * powerup = [_powerupMultiple nextSprite];
+        powerup.position = ccp(winSize.width + 200,
+                               randomValueBetween(0, winSize.height));
+        //winSize.height/2);
+        [powerup revive];
+        [powerup runAction:
+         [CCSequence actions:
+          [CCMoveBy actionWithDuration:20],
+          [CCCallFuncN actionWithTarget:self
+                               selector:@selector(invisNode:)],
+          nil]];
+        
+        CCSpriteFrameCache * cache =
+        [CCSpriteFrameCache sharedSpriteFrameCache];
+        
+        CCAnimation *animation = [CCAnimation animation];
+        [animation addSpriteFrame:
+         [cache spriteFrameByName:@"multiple1.png"]];
+        [animation addSpriteFrame:
+         [cache spriteFrameByName:@"multiple2.png"]];
+        animation.delayPerUnit = 0.2;
+        
+        [powerup runAction:
+         [CCRepeatForever actionWithAction:
+          [CCAnimate actionWithAnimation:animation]]];
+        
+        id move1 = [CCMoveBy
+                    actionWithDuration:.5 position:ccp(-50, -8)];
+        id move2 = [CCMoveBy
+                    actionWithDuration:.5 position:ccp(-50, 8)];
+        id move3 =  [CCMoveBy
+                     actionWithDuration:.5 position:ccp(-50, 8)];
+        id move4 =  [CCMoveBy
+                     actionWithDuration:.5 position:ccp(-50, -8)];
+        id shake = [CCSequence actions:move1, move2, move3, move4, nil];
+        CCRepeat* shakeAction = [CCRepeat
+                                 actionWithAction:shake times:-1];
+        
+        [powerup runAction:shakeAction];
+        
+        
+    }
+    
 }
 
 /*******************************************************************************
@@ -1063,6 +1521,16 @@ enum GameStage {
     }
 }
 
+- (void)updateBigTurret:(ccTime)dt {
+    
+    if (_levelManager.gameState != GameStateNormal) return;
+    if (![_levelManager boolForProp:@"SpawnBigTurret"]) return;
+    
+    if (_bigTurret.visible) {
+        [_bigTurret updateWithShipPosition:_ship.position];
+    }
+}
+
 
 
 - (void)update:(ccTime)dt
@@ -1071,6 +1539,7 @@ enum GameStage {
     [self updateShipPos:dt];
     //sets enemy possition
     [self updateEnemy:dt];
+    [self updateEnemyFlyer:dt];
     //checks for collisions
     //[self updateCollisions:dt];
     //move the background
@@ -1082,7 +1551,8 @@ enum GameStage {
     //}
     [self updateLevel:dt];
     [self updateAlienSwarm:dt];
-    [self updatePowerups:dt];
+    [self updatePowerupBolt:dt];
+    [self updatePowerupMultiple:dt];
     [self updateBoostEffects:dt];
     [self updateBoss:dt];
     
@@ -1097,11 +1567,11 @@ enum GameStage {
 - (void)setupArrays {
     
     //setup the array of enemies
-    _asteroidsArray = [[SpriteArray alloc] initWithCapacity:75
+    _enemysArray = [[SpriteArray alloc] initWithCapacity:75
                                             spriteFrameName:@"foe1.png"
                                                   batchNode:_batchNode
                                                       world:_world
-                                                  shapeName:@"enemy_spaceship"
+                                                  shapeName:@"foe1"
                                                       maxHp:1
                                               healthBarType:HealthBarTypeNone];
     
@@ -1129,21 +1599,29 @@ enum GameStage {
                                           healthBarType:HealthBarTypeNone];
     
     //sets up array of enemy lasers
-    _enemyLasers = [[SpriteArray alloc] initWithCapacity:15
+    _enemyLasers = [[SpriteArray alloc] initWithCapacity:100
                                          spriteFrameName:@"laserbeam_red.png"
                                                batchNode:_batchNode
                                                    world:_world shapeName:@"laserbeam_red"
                                                    maxHp:1
                                            healthBarType:HealthBarTypeNone];
     
-    //sets up array of powerups
-    _powerups = [[SpriteArray alloc] initWithCapacity:1
+    //sets up array of powerupBolt
+    _powerupBolt = [[SpriteArray alloc] initWithCapacity:5
                                       spriteFrameName:@"powerup.png"
                                             batchNode:_batchNode
                                                 world:_world
                                             shapeName:@"powerup"
                                                 maxHp:1
                                         healthBarType:HealthBarTypeNone];
+    
+    _powerupMultiple = [[SpriteArray alloc] initWithCapacity:5
+                                             spriteFrameName:@"multiple1.png"
+                                                   batchNode:_batchNode
+                                                       world:_world
+                                                   shapeName:@"multiple1"
+                                                       maxHp:1
+                                               healthBarType:HealthBarTypeNone];
     
     //sets up array of particle effect (booster)
     _boostEffects = [[ParticleSystemArray alloc] initWithFile:@"Boost.plist"
@@ -1154,9 +1632,19 @@ enum GameStage {
     _cannonBalls = [[SpriteArray alloc] initWithCapacity:5
                                          spriteFrameName:@"Boss_cannon_ball.png"
                                                batchNode:_batchNode
-                                                   world:_world shapeName:@"Boss_cannon_ball"
+                                                   world:_world
+                                               shapeName:@"Boss_cannon_ball"
                                                    maxHp:1
                                            healthBarType:HealthBarTypeNone];
+    
+    //sets up enemy Flyer
+    _enemyFlyerArray = [[SpriteArray alloc] initWithCapacity:8
+                                             spriteFrameName:@"foe1.png"
+                                                   batchNode:_batchNode
+                                                       world:_world
+                                                   shapeName:@"enemy_spaceship"
+                                                       maxHp:10
+                                               healthBarType:HealthBarTypeRed];
     
 }
 
@@ -1215,88 +1703,115 @@ enum GameStage {
     if (_ship == nil || _ship.dead) return;
     
     
-    //if(_powerup == 1){
-    //
-    //    [self shootMultiple];
-    //}
-    //else{
-    //    [self shootSingle];
-   // }
-    [self shootMultiple];
+    [self beginFire];
+    _firing = YES;
     
     
 }
 
+-(void)beginFire
+{
+    //OLD
+    //_timer = [NSTimer scheduledTimerWithTimeInterval:.2 target:self selector:@selector(shootSingle) userInfo:nil repeats:YES];
+    //_timer = [NSTimer scheduledTimerWithTimeInterval:.2 target:self selector:@selector(shootMultiple) userInfo:nil repeats:YES];
+    
+    //Cocos2d scheduler
+    if(_single){
+        [self schedule:@selector(shootSingle) interval:.2];
+    }
+    if(_multiple){
+        [self schedule:@selector(shootMultiple) interval:.18];
+    }
+    
+}
+
+-(void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    if(_single){
+        [self unschedule:@selector(shootSingle)];
+    }
+    if(_multiple){
+        [self unschedule:@selector(shootMultiple)];
+    }
+    _firing = NO;
+    
+}
+
+
 -(void)shootMultiple
 {
-    CGSize winSize = [CCDirector sharedDirector].winSize;
+    if(_multiple){
+        CGSize winSize = [CCDirector sharedDirector].winSize;
     
-    [[SimpleAudioEngine sharedEngine]
-     playEffect:@"laser_ship.caf" pitch:1.0f pan:0.0f
-     gain:0.25f];
+        [[SimpleAudioEngine sharedEngine]
+         playEffect:@"laser_ship.caf" pitch:1.0f pan:0.0f
+         gain:0.25f];
     
-    GameObject *shipLaser = [_laserArray nextSprite];
-    [shipLaser stopAllActions];
-    shipLaser.position = ccpAdd(_ship.position, ccp(shipLaser.contentSize.width/2, 0));
-    [shipLaser revive];
+        GameObject *shipLaser = [_laserArray nextSprite];
+        [shipLaser stopAllActions];
+        shipLaser.position = ccpAdd(_ship.position, ccp(shipLaser.contentSize.width/2, 0));
+        [shipLaser revive];
     
-    GameObject *shipLaser2 = [_laserArray nextSprite];
-    [shipLaser2 stopAllActions];
-    shipLaser2.position = ccpAdd(_ship.position, ccp(shipLaser2.contentSize.width/2, 15));
-    [shipLaser2 revive];
+        GameObject *shipLaser2 = [_laserArray nextSprite];
+        [shipLaser2 stopAllActions];
+        shipLaser2.position = ccpAdd(_ship.position, ccp(shipLaser2.contentSize.width/2, 15));
+        [shipLaser2 revive];
     
-    GameObject *shipLaser3 = [_laserArray nextSprite];
-    [shipLaser3 stopAllActions];
-    shipLaser3.position = ccpAdd(_ship.position, ccp(shipLaser3.contentSize.width/2, -15));
-    [shipLaser3 revive];
+        GameObject *shipLaser3 = [_laserArray nextSprite];
+        [shipLaser3 stopAllActions];
+        shipLaser3.position = ccpAdd(_ship.position, ccp(shipLaser3.contentSize.width/2, -15));
+        [shipLaser3 revive];
     
-    [shipLaser runAction:
-     [CCSequence actions:
-      [CCMoveBy actionWithDuration:.8
-                          position:ccp(winSize.width, 0)],
-      [CCCallFuncN actionWithTarget:self
-                           selector:@selector(invisNode:)],
-      nil]];
+        [shipLaser runAction:
+         [CCSequence actions:
+          [CCMoveBy actionWithDuration:.9
+                              position:ccp(winSize.width, 0)],
+          [CCCallFuncN actionWithTarget:self
+                               selector:@selector(invisNode:)],
+          nil]];
     
-    [shipLaser2 runAction:
-     [CCSequence actions:
-      [CCMoveBy actionWithDuration:.8
-                          position:ccp(winSize.width, 100)],
-      [CCCallFuncN actionWithTarget:self
-                           selector:@selector(invisNode:)],
-      nil]];
+        [shipLaser2 runAction:
+         [CCSequence actions:
+          [CCMoveBy actionWithDuration:.9
+                              position:ccp(winSize.width, 100)],
+          [CCCallFuncN actionWithTarget:self
+                               selector:@selector(invisNode:)],
+          nil]];
     
-    [shipLaser3 runAction:
-     [CCSequence actions:
-      [CCMoveBy actionWithDuration:.8
-                          position:ccp(winSize.width, -100)],
-      [CCCallFuncN actionWithTarget:self
-                           selector:@selector(invisNode:)],
-      nil]];
+        [shipLaser3 runAction:
+         [CCSequence actions:
+          [CCMoveBy actionWithDuration:.9
+                              position:ccp(winSize.width, -100)],
+          [CCCallFuncN actionWithTarget:self
+                               selector:@selector(invisNode:)],
+          nil]];
+    }
     
     
 }
 
 -(void)shootSingle
 {
-    CGSize winSize = [CCDirector sharedDirector].winSize;
+    if(_single){
+        CGSize winSize = [CCDirector sharedDirector].winSize;
     
-    [[SimpleAudioEngine sharedEngine]
-     playEffect:@"laser_ship.caf" pitch:1.0f pan:0.0f
-     gain:0.25f];
+        [[SimpleAudioEngine sharedEngine]
+         playEffect:@"laser_ship.caf" pitch:1.0f pan:0.0f
+         gain:0.25f];
     
-    GameObject *shipLaser = [_laserArray nextSprite];
-    [shipLaser stopAllActions];
-    shipLaser.position = ccpAdd(_ship.position, ccp(shipLaser.contentSize.width/2, 0));
-    [shipLaser revive];
+        GameObject *shipLaser = [_laserArray nextSprite];
+        [shipLaser stopAllActions];
+        shipLaser.position = ccpAdd(_ship.position, ccp(shipLaser.contentSize.width/2, 0));
+        [shipLaser revive];
     
-    [shipLaser runAction:
-     [CCSequence actions:
-      [CCMoveBy actionWithDuration:.8
-                          position:ccp(winSize.width, 0)],
-      [CCCallFuncN actionWithTarget:self
-                           selector:@selector(invisNode:)],
-      nil]];
+        [shipLaser runAction:
+         [CCSequence actions:
+          [CCMoveBy actionWithDuration:.8
+                              position:ccp(winSize.width, 0)],
+          [CCCallFuncN actionWithTarget:self
+                               selector:@selector(invisNode:)],
+          nil]];
+    }
 }
 
 
@@ -1419,8 +1934,17 @@ enum GameStage {
             [enemyShip takeHit];
             [laser takeHit];
             if ([enemyShip dead]) {
-                if (enemyShip == _boss) {
+                if (enemyShip == _boss || enemyShip == _bigTurret) {
                     _wantNextStage = YES;
+                    if(enemyShip == _bigTurret){
+                        [_bigTurret turretDead];
+                    }
+                    
+                }
+                if(enemyShip == _enemyFlyer || enemyShip == _enemyFlyer2 || enemyShip == _enemyFlyer3 ||
+                   enemyShip == _enemyFlyer4 || enemyShip == _enemyFlyer5 || enemyShip == _enemyFlyer6 ||
+                   enemyShip == _enemyFlyer7 || enemyShip == _enemyFlyer8){
+                    [self handleTimerOff];
                 }
                 [[SimpleAudioEngine sharedEngine] playEffect:@"explosion_large.caf" pitch:1.0f pan:0.0f gain:0.25f];
                 CCParticleSystemQuad *explosion = [_explosions nextParticleSystem];
@@ -1465,6 +1989,12 @@ enum GameStage {
         
         if (!enemyShip.dead) {
             
+            if(enemyShip == _enemyFlyer || enemyShip == _enemyFlyer2 || enemyShip == _enemyFlyer3 ||
+               enemyShip == _enemyFlyer4 || enemyShip == _enemyFlyer5 || enemyShip == _enemyFlyer6 ||
+               enemyShip == _enemyFlyer7 || enemyShip == _enemyFlyer8){
+                [self handleTimerOff];
+            }
+            
             [[SimpleAudioEngine sharedEngine] playEffect:@"explosion_large.caf" pitch:1.0f pan:0.0f gain:0.25f];
             
             [self shakeScreen:1];
@@ -1499,7 +2029,7 @@ enum GameStage {
             [[SimpleAudioEngine sharedEngine] playEffect:@"powerup.caf" pitch:1.0 pan:0.0 gain:1.0];
             
             [powerUp destroy];
-            _powerup++;
+            _powerupSingle++;
             
             /*******************************************************************************
              This marks the ship as invincible and starts up a particle system. It then moves
@@ -1520,13 +2050,41 @@ enum GameStage {
             
             [self runAction:
              [CCSequence actions:
-              [CCScaleTo actionWithDuration:scaleDuration scale:0.75],
+              [CCScaleTo actionWithDuration:scaleDuration scale:0.6],
               [CCDelayTime actionWithDuration:waitDuration],
-              [CCScaleTo actionWithDuration:scaleDuration scale:1.0],
+              [CCScaleTo actionWithDuration:scaleDuration scale:.8],
               [CCCallFunc actionWithTarget:self selector:@selector(boostDone)],
               nil]];
         }
     }
+    
+    /*******************************************************************************
+     Collision between ship and multiplelaser powerup
+     *******************************************************************************/
+
+    if ((fixtureA->GetFilterData().categoryBits & kCategoryShip && fixtureB->GetFilterData().categoryBits & kCategoryPowerupMultiple) ||
+        (fixtureB->GetFilterData().categoryBits & kCategoryShip && fixtureA->GetFilterData().categoryBits & kCategoryPowerupMultiple)) {
+        
+        // Determine power up
+        GameObject *powerUp = (GameObject*) spriteA;
+        if (fixtureB->GetFilterData().categoryBits & kCategoryPowerupMultiple) {
+            powerUp = spriteB;
+        }
+        
+        if (!powerUp.dead) {
+            [[SimpleAudioEngine sharedEngine] playEffect:@"powerup.caf" pitch:1.0 pan:0.0 gain:1.0];
+            
+            [powerUp destroy];
+            // TODO: Make the powerup do something!
+            _single = NO;
+            _multiple = YES;
+            if(_firing){
+            [self  beginFire];
+            }
+        }
+    }
+    
+    
     
 }
 
@@ -1633,6 +2191,13 @@ enum GameStage {
     [_batchNode addChild:_boss];
 }
 
+-(void)setupBigTurret
+{
+    _bigTurret = [[BigTurret alloc] initWithWorld:_world layer:self];
+    _bigTurret.visible = NO;
+    [_batchNode addChild:_bigTurret];
+}
+
 - (id)init {
     if ((self = [super init])) {
         
@@ -1657,6 +2222,12 @@ enum GameStage {
         //_gameWonTime = curTime + 30.0;
         [self setupLevelManager];
         [self setupBoss];
+        [self setupBigTurret];
+        
+        [self runAction:
+         [CCSequence actions:
+          [CCScaleTo actionWithDuration:1 scale:0.8],
+          nil]];
         
     }
     return self;

@@ -7,57 +7,147 @@
 		<array>
 			<dict>
 				<key>Duration</key>
-				<integer>2</integer>
+				<integer>5</integer>
 				<key>SpawnLevelIntro</key>
 				<true/>
 				<key>LText</key>
-				<string>Asteroid Belt</string>
+				<string>EasyBreezy</string>
 			</dict>
 			<dict>
-				<key>SpawnAsteroids</key>
+				<key>SpawnLevelIntro</key>
 				<true/>
+				<key>LText</key>
+				<string>Section1</string>
+				<key>SpawnPowerupBolt</key>
+				<false/>
+				<key>SpawnPowerupMultiple</key>
+				<true/>
+				<key>SpawnEnemyFlyer</key>
+				<false/>
+				<key>SpawnEnemys</key>
+				<true/>
+				<key>SpawnAlienSwarm</key>
+				<false/>
+				<key>SpawnBigTurret</key>
+				<false/>
+				<key>SpawnBoss</key>
+				<false/>
 				<key>Duration</key>
-				<integer>15</integer>
+				<integer>20</integer>
+				<key>PBoltSpawnSecs</key>
+				<integer>10</integer>
+				<key>PMultipleSpawnSecs</key>
+				<integer>10</integer>
+				<key>AMoveDurationHigh</key>
+				<integer>9</integer>
+				<key>AMoveDurationLow</key>
+				<integer>7</integer>
+				<key>ASpawnSecsHigh</key>
+				<integer>5</integer>
+				<key>ASpawnSecsLow</key>
+				<integer>2</integer>
+			</dict>
+			<dict>
+				<key>SpawnLevelIntro</key>
+				<true/>
+				<key>LText</key>
+				<string>Section2</string>
+				<key>SpawnPowerupBolt</key>
+				<false/>
+				<key>SpawnPowerupMultiple</key>
+				<true/>
+				<key>SpawnEnemyFlyer</key>
+				<false/>
+				<key>SpawnEnemys</key>
+				<true/>
+				<key>SpawnAlienSwarm</key>
+				<false/>
+				<key>SpawnBigTurret</key>
+				<true/>
+				<key>SpawnBoss</key>
+				<false/>
+				<key>Duration</key>
+				<integer>-1</integer>
+				<key>PBoltSpawnSecs</key>
+				<integer>10</integer>
+				<key>PMultipleSpawnSecs</key>
+				<integer>5</integer>
 				<key>AMoveDurationHigh</key>
 				<integer>8</integer>
 				<key>AMoveDurationLow</key>
 				<integer>6</integer>
 				<key>ASpawnSecsHigh</key>
-				<integer>4</integer>
-				<key>ASpawnSecsLow</key>
-				<integer>2</integer>
-			</dict>
-			<dict>
-				<key>SpawnAsteroids</key>
-				<true/>
-				<key>SpawnPowerups</key>
-				<true/>
-				<key>PSpawnSecs</key>
-				<integer>10</integer>
-				<key>Duration</key>
-				<integer>100</integer>
-				<key>AMoveDurationHigh</key>
-				<integer>7</integer>
-				<key>AMoveDurationLow</key>
 				<integer>5</integer>
-				<key>ASpawnSecsHigh</key>
-				<integer>3</integer>
 				<key>ASpawnSecsLow</key>
-				<integer>1</integer>
+				<integer>2</integer>
 			</dict>
 			<dict>
-				<key>SpawnAsteroids</key>
+				<key>SpawnLevelIntro</key>
 				<true/>
+				<key>LText</key>
+				<string>Section3</string>
+				<key>SpawnPowerupBolt</key>
+				<true/>
+				<key>SpawnPowerupMultiple</key>
+				<false/>
+				<key>SpawnEnemyFlyer</key>
+				<false/>
+				<key>SpawnEnemys</key>
+				<false/>
+				<key>SpawnAlienSwarm</key>
+				<false/>
+				<key>SpawnBigTurret</key>
+				<true/>
+				<key>SpawnBoss</key>
+				<false/>
 				<key>Duration</key>
-				<integer>15</integer>
+				<integer>-1</integer>
+				<key>PBoltSpawnSecs</key>
+				<integer>10</integer>
+				<key>PMultipleSpawnSecs</key>
+				<integer>10</integer>
 				<key>AMoveDurationHigh</key>
-				<integer>6</integer>
+				<integer>9</integer>
 				<key>AMoveDurationLow</key>
-				<integer>4</integer>
+				<integer>7</integer>
 				<key>ASpawnSecsHigh</key>
-				<integer>2</integer>
+				<integer>5</integer>
 				<key>ASpawnSecsLow</key>
-				<real>0.5</real>
+				<integer>2</integer>
+			</dict>
+			<dict>
+				<key>SpawnLevelIntro</key>
+				<true/>
+				<key>LText</key>
+				<string>Section4</string>
+				<key>SpawnPowerupBolt</key>
+				<true/>
+				<key>SpawnPowerupMultiple</key>
+				<false/>
+				<key>SpawnEnemyFlyer</key>
+				<false/>
+				<key>SpawnEnemys</key>
+				<true/>
+				<key>SpawnAlienSwarm</key>
+				<true/>
+				<key>SpawnBigTurret</key>
+				<false/>
+				<key>SpawnBoss</key>
+				<false/>
+				<key>Duration</key>
+				<integer>20</integer>
+				<key>PBoltSpawnSecs</key>
+				<integer>10</integer>
+				<key>PMultipleSpawnSecs</key>
+				<integer>10</integer>
+				<key>AMoveDurationHigh</key>
+				<integer>9</integer>
+				<key>AMoveDurationLow</key>
+				<integer>7</integer>
+				<key>ASpawnSecsHigh</key>
+				<integer>5</integer>
+				<key>ASpawnSecsLow</key>
+				<integer>2</integer>
 			</dict>
 		</array>
 		<array>
@@ -74,11 +164,11 @@
 				<true/>
 				<key>Duration</key>
 				<integer>30</integer>
-				<key>SpawnAsteroids</key>
+				<key>SpawnEnemys</key>
 				<true/>
-				<key>SpawnPowerups</key>
+				<key>SpawnPowerupBolt</key>
 				<true/>
-				<key>PSpawnSecs</key>
+				<key>PBoltSpawnSecs</key>
 				<integer>20</integer>
 				<key>AMoveDurationHigh</key>
 				<integer>10</integer>

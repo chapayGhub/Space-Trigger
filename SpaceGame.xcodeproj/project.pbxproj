@@ -235,6 +235,7 @@
 		35E7C4E916613DB70075C310 /* Levels.plist in Resources */ = {isa = PBXBuildFile; fileRef = 35E7C4E816613DB70075C310 /* Levels.plist */; };
 		35E7C4ED166140C20075C310 /* LevelManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 35E7C4EC166140C20075C310 /* LevelManager.m */; };
 		35E7C72116615AE00075C310 /* BossShip.mm in Sources */ = {isa = PBXBuildFile; fileRef = 35E7C72016615AE00075C310 /* BossShip.mm */; };
+		5226D9C316DDA25F00E8D824 /* BigTurret.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5226D9C216DDA25F00E8D824 /* BigTurret.mm */; };
 		52C4D8EA16DD40D100FAE684 /* blocks.png in Resources */ = {isa = PBXBuildFile; fileRef = 52C4D8DE16DD40D000FAE684 /* blocks.png */; };
 		52C4D8EB16DD40D100FAE684 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 52C4D8DF16DD40D000FAE684 /* Default-568h@2x.png */; };
 		52C4D8EC16DD40D100FAE684 /* Default-Landscape~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = 52C4D8E016DD40D000FAE684 /* Default-Landscape~ipad.png */; };
@@ -649,7 +650,7 @@
 		359D595C165ED37E00EE148E /* SpaceGameFont-ipadhd.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "SpaceGameFont-ipadhd.png"; sourceTree = "<group>"; };
 		359D595D165ED37E00EE148E /* SpaceGameFont-ipadhd.fnt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "SpaceGameFont-ipadhd.fnt"; sourceTree = "<group>"; };
 		359D5960165ED3DB00EE148E /* ActionLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionLayer.h; sourceTree = "<group>"; };
-		359D5961165ED3DC00EE148E /* ActionLayer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ActionLayer.mm; sourceTree = "<group>"; };
+		359D5961165ED3DC00EE148E /* ActionLayer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; lineEnding = 0; path = ActionLayer.mm; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		35CD7044165FF65700535B83 /* star1-hd.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "star1-hd.png"; sourceTree = "<group>"; };
 		35CD7045165FF65800535B83 /* star1-ipadhd.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "star1-ipadhd.png"; sourceTree = "<group>"; };
 		35CD7046165FF65800535B83 /* star1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = star1.png; sourceTree = "<group>"; };
@@ -679,6 +680,8 @@
 		35E7C4EC166140C20075C310 /* LevelManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LevelManager.m; sourceTree = "<group>"; };
 		35E7C71F16615AE00075C310 /* BossShip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BossShip.h; sourceTree = "<group>"; };
 		35E7C72016615AE00075C310 /* BossShip.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = BossShip.mm; sourceTree = "<group>"; };
+		5226D9C116DDA25F00E8D824 /* BigTurret.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BigTurret.h; sourceTree = "<group>"; };
+		5226D9C216DDA25F00E8D824 /* BigTurret.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = BigTurret.mm; sourceTree = "<group>"; };
 		52C4D8DE16DD40D000FAE684 /* blocks.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = blocks.png; path = Resources/blocks.png; sourceTree = "<group>"; };
 		52C4D8DF16DD40D000FAE684 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "Resources/Default-568h@2x.png"; sourceTree = "<group>"; };
 		52C4D8E016DD40D000FAE684 /* Default-Landscape~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-Landscape~ipad.png"; path = "Resources/Default-Landscape~ipad.png"; sourceTree = "<group>"; };
@@ -750,20 +753,12 @@
 			isa = PBXGroup;
 			children = (
 				35E7C4E816613DB70075C310 /* Levels.plist */,
-				359D5894165EC51100EE148E /* IntroLayer.h */,
-				359D5895165EC51100EE148E /* IntroLayer.mm */,
-				359D5897165EC51100EE148E /* GLES-Render.h */,
-				359D5898165EC51100EE148E /* GLES-Render.mm */,
+				5226D9C116DDA25F00E8D824 /* BigTurret.h */,
+				5226D9C216DDA25F00E8D824 /* BigTurret.mm */,
 				359D5960165ED3DB00EE148E /* ActionLayer.h */,
 				359D5961165ED3DC00EE148E /* ActionLayer.mm */,
-				35CD7063166007AE00535B83 /* Common.h */,
-				35CD7064166007AE00535B83 /* Common.mm */,
-				35CD705F1660051700535B83 /* SpriteArray.h */,
-				35CD70601660051700535B83 /* SpriteArray.mm */,
 				35E7C4D4166123050075C310 /* GameObject.h */,
 				35E7C4D5166123050075C310 /* GameObject.mm */,
-				35E7C4E01661306B0075C310 /* ParticleSystemArray.h */,
-				35E7C4E11661306B0075C310 /* ParticleSystemArray.mm */,
 				35E7C4EB166140C20075C310 /* LevelManager.h */,
 				35E7C4EC166140C20075C310 /* LevelManager.m */,
 				35E7C71F16615AE00075C310 /* BossShip.h */,
@@ -1304,6 +1299,16 @@
 		359D588A165EC51100EE148E /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				359D5894165EC51100EE148E /* IntroLayer.h */,
+				359D5895165EC51100EE148E /* IntroLayer.mm */,
+				359D5897165EC51100EE148E /* GLES-Render.h */,
+				359D5898165EC51100EE148E /* GLES-Render.mm */,
+				35CD7063166007AE00535B83 /* Common.h */,
+				35CD7064166007AE00535B83 /* Common.mm */,
+				35CD705F1660051700535B83 /* SpriteArray.h */,
+				35CD70601660051700535B83 /* SpriteArray.mm */,
+				35E7C4E01661306B0075C310 /* ParticleSystemArray.h */,
+				35E7C4E11661306B0075C310 /* ParticleSystemArray.mm */,
 				359D588E165EC51100EE148E /* AppDelegate.h */,
 				359D588F165EC51100EE148E /* AppDelegate.mm */,
 				359D588B165EC51100EE148E /* Prefix.pch */,
@@ -1724,6 +1729,7 @@
 				35E7C4E21661306B0075C310 /* ParticleSystemArray.mm in Sources */,
 				35E7C4ED166140C20075C310 /* LevelManager.m in Sources */,
 				35E7C72116615AE00075C310 /* BossShip.mm in Sources */,
+				5226D9C316DDA25F00E8D824 /* BigTurret.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -16,6 +16,9 @@
 - (void)endContact:(b2Contact *)contact;
 
 - (void)shootEnemyLaserFromPosition:(CGPoint)position;
+- (void)shootEnemyVerticalDownLaserFromPosition:(CGPoint)position;
+- (void)shootEnemyVerticalUpLaserFromPosition:(CGPoint)position;
+
 
 - (void)shootCannonBallAtShipFromPosition:(CGPoint)position;
 
