@@ -103,14 +103,14 @@ void FNTConfigRemoveCache( void )
         
 		kerningDictionary_ = NULL;
 		fontDefDictionary_ = NULL;
-    
+        
 		NSMutableString *validCharsString = [self parseConfigFile:fntFile];
-		  
+        
 		if( ! validCharsString ) {
 			[self release];
 			return nil;
 		}
-    
+        
 		characterSet_ = [[NSCharacterSet characterSetWithCharactersInString:validCharsString] retain];
 	}
 	return self;
@@ -136,7 +136,7 @@ void FNTConfigRemoveCache( void )
 
 
 -(void) purgeFontDefDictionary
-{	
+{
 	tCCFontDefHashElement *current, *tmp;
 	
 	HASH_ITER(hh, fontDefDictionary_, current, tmp) {
@@ -161,7 +161,7 @@ void FNTConfigRemoveCache( void )
 	NSString *fullpath = [[CCFileUtils sharedFileUtils] fullPathFromRelativePath:fntFile];
 	NSError *error;
 	NSString *contents = [NSString stringWithContentsOfFile:fullpath encoding:NSUTF8StringEncoding error:&error];
-  
+    
 	NSMutableString *validCharsString = [[NSMutableString alloc] initWithCapacity:512];
     
 	if( ! contents ) {
@@ -184,7 +184,7 @@ void FNTConfigRemoveCache( void )
 		if([line hasPrefix:@"info face"]) {
 			// XXX: info parsing is incomplete
 			// Not needed for the Hiero editors, but needed for the AngelCode editor
-//			[self parseInfoArguments:line];
+            //			[self parseInfoArguments:line];
 		}
 		// Check to see if the start of the line is something we are interested in
 		else if([line hasPrefix:@"common lineHeight"]) {
@@ -204,12 +204,12 @@ void FNTConfigRemoveCache( void )
 			
 			element->key = element->fontDef.charID;
 			HASH_ADD_INT(fontDefDictionary_, key, element);
-      
+            
 			[validCharsString appendString:[NSString stringWithFormat:@"%C", element->fontDef.charID]];
 		}
-//		else if([line hasPrefix:@"kernings count"]) {
-//			[self parseKerningCapacity:line];
-//		}
+        //		else if([line hasPrefix:@"kernings count"]) {
+        //			[self parseKerningCapacity:line];
+        //		}
 		else if([line hasPrefix:@"kerning first"]) {
 			[self parseKerningEntry:line];
 		}
@@ -524,7 +524,7 @@ void FNTConfigRemoveCache( void )
         
 		reusedChar_ = [[CCSprite alloc] initWithTexture:textureAtlas_.texture rect:CGRectMake(0, 0, 0, 0) rotated:NO];
 		[reusedChar_ setBatchNode:self];
-
+        
 		[self setString:theString updateLabel:YES];
 	}
     
@@ -545,7 +545,7 @@ void FNTConfigRemoveCache( void )
 #pragma mark LabelBMFont - Alignment
 
 - (void)updateLabel
-{	
+{
     [self setString:initialString_ updateLabel:NO];
 	
     if (width_ > 0){
@@ -716,7 +716,7 @@ void FNTConfigRemoveCache( void )
 	NSUInteger totalHeight = 0;
     
 	NSUInteger quantityOfLines = 1;
-  
+    
 	NSCharacterSet *charSet	= configuration_.characterSet;
     
 	NSUInteger stringLen = [string_ length];
@@ -735,7 +735,7 @@ void FNTConfigRemoveCache( void )
 	nextFontPositionY = -(configuration_->commonHeight_ - configuration_->commonHeight_*quantityOfLines);
     CGRect rect;
     ccBMFontDef fontDef;
-
+    
 	for(NSUInteger i = 0; i<stringLen; i++) {
 		unichar c = [string_ characterAtIndex:i];
         
@@ -744,7 +744,7 @@ void FNTConfigRemoveCache( void )
 			nextFontPositionY -= configuration_->commonHeight_;
 			continue;
 		}
-    
+        
 		if(![charSet characterIsMember:c]){
 			CCLOGWARN(@"CCLabelBMFont: Attempted to use character not defined in this bitmap: %C", c);
 			continue;
@@ -771,7 +771,7 @@ void FNTConfigRemoveCache( void )
 		rect.origin.y += imageOffset_.y;
         
 		CCSprite *fontChar;
-
+        
 		BOOL hasSprite = YES;
 		fontChar = (CCSprite*) [self getChildByTag:i];
 		if( ! fontChar ) {
@@ -789,7 +789,7 @@ void FNTConfigRemoveCache( void )
 				[fontChar release];
 			}
 		}
-
+        
 		// updating previous sprite
 		[fontChar setTextureRect:rect rotated:NO untrimmedSize:rect.size];
 		
@@ -865,7 +865,7 @@ void FNTConfigRemoveCache( void )
 	
     CCSprite *child;
     CCARRAY_FOREACH(children_, child)
-		child.visible = NO;
+    child.visible = NO;
 	
 	[self createFontChars];
 	
@@ -881,7 +881,7 @@ void FNTConfigRemoveCache( void )
     
 	CCSprite *child;
 	CCARRAY_FOREACH(children_, child)
-		[child setColor:color_];
+    [child setColor:color_];
 }
 
 -(void) setOpacity:(GLubyte)opacity
@@ -890,7 +890,7 @@ void FNTConfigRemoveCache( void )
     
 	id<CCRGBAProtocol> child;
 	CCARRAY_FOREACH(children_, child)
-		[child setOpacity:opacity_];
+    [child setOpacity:opacity_];
 }
 -(void) setOpacityModifyRGB:(BOOL)modify
 {
@@ -898,7 +898,7 @@ void FNTConfigRemoveCache( void )
     
 	id<CCRGBAProtocol> child;
 	CCARRAY_FOREACH(children_, child)
-		[child setOpacityModifyRGB:modify];
+    [child setOpacityModifyRGB:modify];
 }
 
 -(BOOL) doesOpacityModifyRGB

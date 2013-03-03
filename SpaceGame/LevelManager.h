@@ -27,6 +27,7 @@ typedef enum {
 @property (assign) GameState gameState;
 
 - (int)curLevelIdx;
+- (int)curStageIdx;
 - (void)nextStage;
 - (void)nextLevel;
 - (BOOL)update;

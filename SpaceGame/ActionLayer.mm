@@ -21,6 +21,7 @@
 #import "BossShip.h"
 #import "BigTurret.h"
 
+
 //Constants to make referring to shape categories easier in code.
 #define kCategoryShip       0x1
 #define kCategoryShipLaser  0x2
@@ -42,17 +43,6 @@ enum GameStage {
     /*******************************************************************************
      Private intance variables
      *******************************************************************************/
-    
-    //Declare two private instance variables for the two CCLabelBMFont labels to display the game’s title.
-    //CCLabelBMFont requires pre-rendered font images
-    CCLabelBMFont * _titleLabel1;
-    CCLabelBMFont * _titleLabel2;
-    
-    //Play button
-    CCMenuItemLabel * _playItem;
-    
-    //Tutorial button
-    CCMenuItemLabel * _tutorialItem;
     
     //Variables for loading sprite sheet
     CCSpriteBatchNode * _batchNode;
@@ -105,11 +95,6 @@ enum GameStage {
     //double _gameWonTime;
     LevelManager * _levelManager;
     
-    
-    CCLabelBMFont *_levelIntroLabel1;
-    CCLabelBMFont *_levelIntroLabel2;
-    CCLabelBMFont *_tutorialLabel;
-    
     //Variables for alien ships
     SpriteArray * _alienArray;
     double _nextAlienSpawn;
@@ -158,6 +143,33 @@ enum GameStage {
     BOOL _single;
     BOOL _multiple;
     
+    //Background stuff
+    //CCLabelBMFont requires pre-rendered font images
+    CCLabelBMFont * _titleLabel1;
+    CCLabelBMFont * _titleLabel2;
+    CCLabelBMFont * _titleLabel3;
+    CCLabelBMFont *_levelIntroLabel1;
+    CCLabelBMFont *_levelIntroLabel2;
+    CCSprite *_fighterMain;
+    CCSprite *_fighterMain2;
+    CCSprite *_lenseFlare;
+    CCSprite *_rectangle;
+    CCSprite *_rectangle2;
+    CCSprite *_rectangle3;
+    //Background Images
+    CCSprite * _background1;
+    //Play button
+    CCMenuItemLabel * _playItem;
+    //Tutorial button
+    CCMenuItemLabel * _tutorialItem;
+    //High Scores button
+    CCMenuItemLabel * _highScoreItem;
+    
+    //Keeps track if playing or not
+    BOOL _isPlaying;
+    
+    //Score
+    int _score;
 }
 
 
@@ -172,14 +184,16 @@ enum GameStage {
  ActionLayer as a child of the scene. When Cocos2D scene run on startup, this
  method is called.
  *******************************************************************************/
-+ (id)scene
-{
-    
++ (id)scene {
     CCScene *scene = [CCScene node];
-    ActionLayer *layer = [ActionLayer node];
-    [scene addChild:layer];
-    return scene;
     
+    HUDLayer *hud = [HUDLayer node];
+    [scene addChild:hud z:1];
+    
+    ActionLayer *layer = [[ActionLayer alloc] initWithHUD:hud];
+    [scene addChild:layer];
+    
+    return scene;
 }
 
 
@@ -206,11 +220,13 @@ enum GameStage {
      zoom in onto the screen.
      CCallBlock is an action to run an arbitrary block of code when the action
      fires. In this case, when the block runs you simply play the sound effect.
+     
+     NEW* I have added images and animations to the title.
      *******************************************************************************/
     _titleLabel1 = [CCLabelBMFont labelWithString:@"Game By: Jonny Ramos" fntFile:fontName];
     _titleLabel1.scale = 0;
     _titleLabel1.position = ccp(winSize.width/2, winSize.height * 0.8);
-    [self addChild:_titleLabel1 z:100];
+    //[self addChild:_titleLabel1 z:100];
     [_titleLabel1 runAction:
      [CCSequence actions:
       [CCDelayTime actionWithDuration:1.0],
@@ -221,17 +237,117 @@ enum GameStage {
        [CCScaleTo actionWithDuration:1.0 scale:0.5] rate:2.0],
       nil]];
     
+    _fighterMain2 = [CCSprite spriteWithFile:@"fightermain2.png"];
+    _fighterMain2.scale = 0;
+    _fighterMain2.position = ccp(-200, winSize.height/2);
+    [self addChild:_fighterMain2 z:101];
+    [_fighterMain2 runAction:
+     [CCSequence actions:
+      [CCDelayTime actionWithDuration:1],
+      [CCEaseOut actionWithAction:
+       [CCScaleTo actionWithDuration:3 scale:.75] rate:1],
+     nil]];
+    [_fighterMain2 runAction:
+     [CCSequence actions:
+      [CCDelayTime actionWithDuration:1],
+      [CCMoveTo actionWithDuration:1.5 position:ccp(winSize.width + 250, winSize.height/2)],
+      nil]];
+   
+    _lenseFlare = [CCSprite spriteWithFile:@"lenseflare.png"];
+    _lenseFlare.scale = 0;
+    _lenseFlare.position = ccp(winSize.width/2, winSize.height * .9);
+    [self addChild:_lenseFlare z:100];
+    [_lenseFlare runAction:
+     [CCSequence actions:
+      [CCDelayTime actionWithDuration:4],
+      [CCEaseOut actionWithAction:
+       [CCScaleTo actionWithDuration:.1 scale:.995] rate:1],
+      nil]];
+
     
-    _titleLabel2 = [CCLabelBMFont labelWithString:@"Space Blaster!" fntFile:fontName];
+    _fighterMain = [CCSprite spriteWithFile:@"fightermain.png"];
+    _fighterMain.scale = .4;
+    _fighterMain.position = ccp(winSize.width/2, winSize.height * -.5);
+    [self addChild:_fighterMain z:101];
+    [_fighterMain runAction:
+     [CCSequence actions:
+      [CCDelayTime actionWithDuration:3],
+      [CCEaseOut actionWithAction:
+       [CCScaleTo actionWithDuration:1 scale:1] rate:.5],
+      nil]];
+    [_fighterMain runAction:
+     [CCSequence actions:
+      [CCDelayTime actionWithDuration:3],
+      [CCMoveTo actionWithDuration:1 position:ccp(winSize.width/2, winSize.height * .9)],
+      nil]];
+    
+    
+    
+    _titleLabel2 = [CCLabelBMFont labelWithString:@"Space" fntFile:fontName];
     _titleLabel2.scale = 0;
-    _titleLabel2.position = ccp(winSize.width/2, winSize.height * 0.6);
+    _titleLabel2.position = ccp(-200, winSize.height);
     [self addChild:_titleLabel2 z:100];
     [_titleLabel2 runAction:
      [CCSequence actions:
-      [CCDelayTime actionWithDuration:2.0],
+      [CCDelayTime actionWithDuration:4],
       [CCEaseOut actionWithAction:
-       [CCScaleTo actionWithDuration:1.0 scale:1.25] rate:2.0],
+       [CCScaleTo actionWithDuration:.25 scale:1.25] rate:2.0],
       
+      nil]];
+    [_titleLabel2 runAction:
+     [CCSequence actions:
+      [CCDelayTime actionWithDuration:4],
+      [CCMoveTo actionWithDuration:.25 position:ccp(winSize.width * .25, winSize.height)],
+      nil]];
+    
+    _titleLabel3 = [CCLabelBMFont labelWithString:@"Blaster" fntFile:fontName];
+    _titleLabel3.scale = 0;
+    _titleLabel3.position = ccp(winSize.width + 250, winSize.height * .85);
+    [self addChild:_titleLabel3 z:100];
+    [_titleLabel3 runAction:
+     [CCSequence actions:
+      [CCDelayTime actionWithDuration:4],
+      [CCEaseOut actionWithAction:
+       [CCScaleTo actionWithDuration:.25 scale:1.25] rate:2.0],
+      
+      nil]];
+    [_titleLabel3 runAction:
+     [CCSequence actions:
+      [CCDelayTime actionWithDuration:4],
+      [CCMoveTo actionWithDuration:.25 position:ccp(winSize.width * .75, winSize.height * .85)],
+      nil]];
+    
+    _rectangle = [CCSprite spriteWithFile:@"rectangle.png"];
+    _rectangle.scale = 1;
+    _rectangle.opacity = 0;
+    _rectangle.position = ccp(winSize.width/2, winSize.height * 0.45);
+    [self addChild:_rectangle z:100];
+    [_rectangle runAction:
+     [CCSequence actions:
+      [CCDelayTime actionWithDuration:4],
+      [CCFadeIn actionWithDuration:3],
+      nil]];
+    
+    _rectangle2 = [CCSprite spriteWithFile:@"rectangle.png"];
+    _rectangle2.scale = 1;
+    _rectangle2.opacity = 0;
+    _rectangle2.position = ccp(winSize.width/2, winSize.height * 0.3);
+    [self addChild:_rectangle2 z:100];
+    [_rectangle2 runAction:
+     [CCSequence actions:
+      [CCDelayTime actionWithDuration:4],
+      [CCFadeIn actionWithDuration:3],
+      nil]];
+    
+    _rectangle3 = [CCSprite spriteWithFile:@"rectangle.png"];
+    _rectangle3.scale = 1;
+    _rectangle3.opacity = 0;
+    _rectangle3.position = ccp(winSize.width/2, winSize.height * 0.15);
+    [self addChild:_rectangle3 z:100];
+    [_rectangle3 runAction:
+     [CCSequence actions:
+      [CCDelayTime actionWithDuration:4],
+      [CCFadeIn actionWithDuration:3],
       nil]];
     /*******************************************************************************
      Cocos2D actions - Create an action based on what the object does (jump, rotate,
@@ -249,15 +365,15 @@ enum GameStage {
     _playItem = [CCMenuItemLabel itemWithLabel:playLabel target:self
                                       selector:@selector(playTapped:)];
     _playItem.scale = 0;
-    _playItem.position = ccp(winSize.width/2, winSize.height * 0.35);
+    _playItem.position = ccp(winSize.width/2, winSize.height * 0.45);
     
     CCMenu *menu = [CCMenu menuWithItems:_playItem, nil];
     menu.position = CGPointZero;
-    [self addChild:menu];
+    [self addChild:menu z:100];
     
     [_playItem runAction:
      [CCSequence actions:
-      [CCDelayTime actionWithDuration:2.0],
+      [CCDelayTime actionWithDuration:4],
       [CCEaseOut actionWithAction:
        [CCScaleTo actionWithDuration:0.5 scale:0.5] rate:4.0],
       nil]];
@@ -278,18 +394,48 @@ enum GameStage {
     _tutorialItem = [CCMenuItemLabel itemWithLabel:tutorialLabel target:self
                                       selector:@selector(tutorialTapped:)];
     _tutorialItem.scale = 0;
-    _tutorialItem.position = ccp(winSize.width/2, winSize.height * 0.2);
+    _tutorialItem.position = ccp(winSize.width/2, winSize.height * 0.3);
     
     menu = [CCMenu menuWithItems:_tutorialItem, nil];
     menu.position = CGPointZero;
-    [self addChild:menu];
+    [self addChild:menu z:100];
     
     [_tutorialItem runAction:
      [CCSequence actions:
-      [CCDelayTime actionWithDuration:2.0],
+      [CCDelayTime actionWithDuration:4],
       [CCEaseOut actionWithAction:
        [CCScaleTo actionWithDuration:0.5 scale:0.5] rate:4.0],
       nil]];
+    
+    /*******************************************************************************
+     This creates a CCLabelBMFont that reads "High Scores"
+     *******************************************************************************/
+    CCLabelBMFont *highScoresLabel = [CCLabelBMFont labelWithString:@"High Scores" fntFile:fontName];
+    _highScoreItem = [CCMenuItemLabel itemWithLabel:highScoresLabel target:self
+                                          selector:@selector(highScoresTapped:)];
+    _highScoreItem.scale = 0;
+    _highScoreItem.position = ccp(winSize.width/2, winSize.height * 0.15);
+    
+    menu = [CCMenu menuWithItems:_highScoreItem, nil];
+    menu.position = CGPointZero;
+    [self addChild:menu z:100];
+    
+    [_highScoreItem runAction:
+     [CCSequence actions:
+      [CCDelayTime actionWithDuration:4],
+      [CCEaseOut actionWithAction:
+       [CCScaleTo actionWithDuration:0.5 scale:0.5] rate:4.0],
+      nil]];
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    _isPlaying = NO;
     
     
 }
@@ -348,6 +494,38 @@ enum GameStage {
     [label runAction:[CCScaleTo actionWithDuration:0.5
                                              scale:0.5]];
     
+    [self saveScores];
+    [self getScores];
+    
+}
+
+- (void)endTutorial
+{
+    
+    if (_gameOver) return;
+    _gameOver = TRUE;
+    //_gameStage = GameStageDone;
+    
+    CGSize winSize = [CCDirector sharedDirector].winSize;
+    
+    CCLabelBMFont *restartLabel = [CCLabelBMFont labelWithString:@"End Tutorial"
+                                                         fntFile:@"SpaceGameFont.fnt"];
+    
+    CCMenuItemLabel *restartItem = [CCMenuItemLabel
+                                    itemWithLabel:restartLabel target:self
+                                    selector:@selector(restartTapped:)];
+    restartItem.scale = .3;
+    restartItem.position = ccp(winSize.width,
+                               winSize.height + 50);
+    
+    CCMenu *menu = [CCMenu menuWithItems:restartItem, nil];
+    menu.position = CGPointZero;
+    [self addChild:menu];
+    
+    [restartItem runAction:
+     [CCRepeatForever actionWithAction:
+      [CCFadeOut actionWithDuration:1]]];
+    
 }
 
 /*******************************************************************************
@@ -364,9 +542,81 @@ enum GameStage {
     // Reload the current scene
     CCScene *scene = [ActionLayer scene];
     [[CCDirector sharedDirector] replaceScene:
-     [CCTransitionZoomFlipX transitionWithDuration:0.5
+     [CCTransitionZoomFlipX transitionWithDuration:1
                                              scene:scene]];
     
+    _isPlaying = NO;
+    
+}
+
+/*******************************************************************************
+ * @method      playTapped
+ * @abstract
+ * @description When the play button is tapped, play a sound effect (powerup.caf)
+ and make the title and menu item zoom out.
+ *******************************************************************************/
+- (void)playTapped:(id)sender {
+    
+    [[SimpleAudioEngine sharedEngine] playEffect:@"powerup.caf"];
+    
+    NSArray * nodes = @[_titleLabel1, _titleLabel2, _titleLabel3, _playItem, _tutorialItem, _rectangle, _rectangle2, _rectangle3, _lenseFlare, _fighterMain, _fighterMain2];
+    for (CCNode *node in nodes) {
+        [node runAction:
+         [CCSequence actions:
+          [CCEaseOut actionWithAction:
+           [CCScaleTo actionWithDuration:0.5 scale:0] rate:4.0],
+          [CCCallFuncN actionWithTarget:self selector:@selector(removeNode:)],
+          nil]];
+    }
+    
+    [self spawnShip];
+    //_gameStage = GameStageenemys;
+    [_levelManager nextStage];
+    [_levelManager nextStage];
+    [_levelManager nextStage];
+    [_levelManager nextStage];
+    [_levelManager nextStage];
+    [_levelManager nextStage];
+    [_levelManager nextStage];
+    [self newStageStarted];
+    //start with singleshot
+    _single = YES;
+    
+    _isPlaying = YES;
+    
+}
+
+- (void)tutorialTapped:(id)sender {
+    
+    [[SimpleAudioEngine sharedEngine] playEffect:@"powerup.caf"];
+    
+    NSArray * nodes = @[_titleLabel1, _titleLabel2, _titleLabel3, _playItem, _tutorialItem, _rectangle, _rectangle2, _rectangle3, _lenseFlare, _fighterMain, _fighterMain2];
+    for (CCNode *node in nodes) {
+        [node runAction:
+         [CCSequence actions:
+          [CCEaseOut actionWithAction:
+           [CCScaleTo actionWithDuration:0.5 scale:0] rate:4.0],
+          [CCCallFuncN actionWithTarget:self selector:@selector(removeNode:)],
+          nil]];
+    }
+    
+    [self spawnShip];
+    [_levelManager nextStage];
+    [self newStageStarted];
+    //_gameStage = GameStageenemys;
+    //start with singleshot
+    _single = YES;
+    [self endTutorial];
+    
+}
+
+-(void)highScoresTapped:(id)sender {
+    
+    // Reload the current scene
+    CCScene *scene = [ActionLayer scene];
+    [[CCDirector sharedDirector] replaceScene:
+     [CCTransitionFade transitionWithDuration:2
+                                             scene:scene]];
 }
 
 
@@ -427,9 +677,8 @@ enum GameStage {
      1.	Create a CCAnimation, specifying the images that make up the animation.
      2.	Create a CCAnimate action and run it on the sprite, specifying the
      CCAnimation created earlier.
-     Note that the CCAnimate action runs the animation only once, so a lot of times
-     you want to wrap it in a CCRepeatForever action so it keeps going until you
-     tell it to stop.
+     CCAnimate action runs the animation only once, CCRepeatForever action so it 
+     keeps going until we tell it to stop.
      *******************************************************************************/
     CCSpriteFrameCache * cache =
     [CCSpriteFrameCache sharedSpriteFrameCache];
@@ -449,58 +698,6 @@ enum GameStage {
      new CCAnimate action on the ship, wrapped in a CCRepeatForeverAction
      *******************************************************************************/
     
-    
-}
-
-
-/*******************************************************************************
- * @method      playTapped
- * @abstract
- * @description When the play button is tapped, play a sound effect (powerup.caf)
- and make the title and menu item zoom out.
- *******************************************************************************/
-- (void)playTapped:(id)sender {
-    
-    [[SimpleAudioEngine sharedEngine] playEffect:@"powerup.caf"];
-    
-    NSArray * nodes = @[_titleLabel1, _titleLabel2, _playItem, _tutorialItem];
-    for (CCNode *node in nodes) {
-        [node runAction:
-         [CCSequence actions:
-          [CCEaseOut actionWithAction:
-           [CCScaleTo actionWithDuration:0.5 scale:0] rate:4.0],
-          [CCCallFuncN actionWithTarget:self selector:@selector(removeNode:)],
-          nil]];
-    }
-    
-    [self spawnShip];
-    //_gameStage = GameStageenemys;
-    [_levelManager nextStage];
-    [self newStageStarted];
-    //start with singleshot
-    _single = YES;
-    
-}
-
-- (void)tutorialTapped:(id)sender {
-    
-    [[SimpleAudioEngine sharedEngine] playEffect:@"powerup.caf"];
-    
-    NSArray * nodes = @[_titleLabel1, _titleLabel2, _playItem, _tutorialItem];
-    for (CCNode *node in nodes) {
-        [node runAction:
-         [CCSequence actions:
-          [CCEaseOut actionWithAction:
-           [CCScaleTo actionWithDuration:0.5 scale:0] rate:4.0],
-          [CCCallFuncN actionWithTarget:self selector:@selector(removeNode:)],
-          nil]];
-    }
-    
-    [self spawnShip];
-    [_levelManager nextStage];
-    //_gameStage = GameStageenemys;
-    //start with singleshot
-    _single = YES;
     
 }
 
@@ -701,11 +898,11 @@ enum GameStage {
         enemy5.visible = YES;
         
         // Set its position to be offscreen to the right
-        enemy.position = ccp(winSize.width+enemy.contentSize.width/2, randY);
-        enemy2.position = ccp(winSize.width+enemy.contentSize.width+80/2, randY);
-        enemy3.position = ccp(winSize.width+enemy.contentSize.width+80+80/2, randY);
-        enemy4.position = ccp(winSize.width+enemy.contentSize.width+80+80+80/2, randY);
-        enemy5.position = ccp(winSize.width+enemy.contentSize.width+80+80+80+80/2, randY);
+        enemy.position = ccp(winSize.width+enemy.contentSize.width+80/2, randY);
+        enemy2.position = ccp(winSize.width+enemy.contentSize.width+80+80/2, randY);
+        enemy3.position = ccp(winSize.width+enemy.contentSize.width+80+80+80/2, randY);
+        enemy4.position = ccp(winSize.width+enemy.contentSize.width+80+80+80+80/2, randY);
+        enemy5.position = ccp(winSize.width+enemy.contentSize.width+80+80+80+80+80/2, randY);
         
         // Set it's size to be one of X random sizes
         int randNum = arc4random() % 1;
@@ -1022,6 +1219,8 @@ enum GameStage {
  boxes collide (and both are visible).
  If so, it plays an explosion sound effect, and makes both of them invisible to
  “destroy” them.
+ 
+ OLD CODE
  *******************************************************************************/
 - (void)updateCollisions:(ccTime)dt {
     
@@ -1082,11 +1281,12 @@ enum GameStage {
     BOOL newStage = [_levelManager update];
     if (newStage) {
         [self newStageStarted];
+        //[self setupBackground];
     }
     if (_wantNextStage) {
         _wantNextStage = NO;
         [_levelManager nextStage];
-        [self newStageStarted];
+        //[self newStageStarted];
     }
     
 }
@@ -1148,16 +1348,16 @@ enum GameStage {
     
     CGSize winSize = [CCDirector sharedDirector].winSize;
     
-    NSString *message1 = [NSString stringWithFormat:@"Level %d",
-                          _levelManager.curLevelIdx+1];
+    NSString *message1 = [_levelManager stringForProp:@"SText"];
+    
     NSString *message2 = [_levelManager stringForProp:@"LText"];
     
-    NSString *message3 = [_levelManager stringForProp:@"LText"];
+    NSString *message3 = [_levelManager stringForProp:@"TText"];
     
     _levelIntroLabel1 = [CCLabelBMFont labelWithString:message1
                                                fntFile:@"SpaceGameFont.fnt"];
     _levelIntroLabel1.scale = 0;
-    _levelIntroLabel1.position = ccp(winSize.width/2, winSize.height * 0.6);
+    _levelIntroLabel1.position = ccp(winSize.width/2, winSize.height * 0.8);
     [self addChild:_levelIntroLabel1 z:100];
     
     [_levelIntroLabel1 runAction:
@@ -1189,7 +1389,7 @@ enum GameStage {
     
     _tutorialItem = [CCLabelBMFont labelWithString:message3
                                                fntFile:@"SpaceGameFont.fnt"];
-    _tutorialItem.position = ccp(winSize.width/2, winSize.height * 0.8);
+    _tutorialItem.position = ccp(winSize.width/2, winSize.height * 0.6);
     _tutorialItem.scale = 0;
     [self addChild:_tutorialItem z:100];
     
@@ -1531,6 +1731,77 @@ enum GameStage {
     }
 }
 
+-(void)updateScore
+{
+    if (_isPlaying){
+        [_hud setScoreLabel:[NSString stringWithFormat:@"Score: %d", _score]];
+    }
+}
+
+-(void)saveScores
+{
+    
+    // Get user defaults
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    
+    // Register default high scores
+    NSDictionary *defaultDefaults = [NSDictionary dictionaryWithObject:[NSArray arrayWithObjects:[NSNumber numberWithInt:0], [NSNumber numberWithInt:0], [NSNumber numberWithInt:0], [NSNumber numberWithInt:0], [NSNumber numberWithInt:0], [NSNumber numberWithInt:0], [NSNumber numberWithInt:0], [NSNumber numberWithInt:0], [NSNumber numberWithInt:0], [NSNumber numberWithInt:0], nil] forKey:@"scores"];
+    
+    [defaults registerDefaults:defaultDefaults];
+    [defaults synchronize];
+    
+    NSMutableArray *highScores = [NSMutableArray arrayWithArray:[defaults arrayForKey:@"scores"]];
+    
+    // Iterate thru high scores; see if current point value is higher than any of the stored values
+    for (int i = 0; i < [highScores count]; i++)
+    {
+        if (_score >= [[highScores objectAtIndex:i] intValue])
+        {
+            // Insert new high score, which pushes all others down
+            [highScores insertObject:[NSNumber numberWithInt:_score] atIndex:i];
+            // Remove last score, so as to ensure only 10 entries in the high score array
+            [highScores removeLastObject];
+            // Re-save scores array to user defaults
+            [defaults setObject:highScores forKey:@"scores"];
+            [defaults synchronize];
+            NSLog(@"Saved new high score of %i", _score);
+            // Bust out of the loop
+            break;
+        }
+    }
+
+}
+
+-(void)getScores
+{
+    // Put the following in the init method of ScoresLayer
+    
+    // Get window size
+    CGSize winSize = [CCDirector sharedDirector].winSize;
+    
+    // Get scores array stored in user defaults
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    
+    // Get high scores array from "defaults" object
+    NSArray *highScores = [defaults arrayForKey:@"scores"];
+    
+    // Create a mutable string which will be used to store the score list
+    NSMutableString *scoresString = [NSMutableString stringWithString:@""];
+    
+    // Iterate through array and print out high scores
+    for (int i = 0; i < [highScores count]; i++)
+    {
+        [scoresString appendFormat:@"%i. %i\n", i + 1, [[highScores objectAtIndex:i] intValue]];
+    }
+    
+    
+     CCLabelBMFont *scoreLabel = [CCLabelBMFont labelWithString:scoresString fntFile:@"SpaceGameFont.fnt" width:winSize.width alignment:kCCTextAlignmentCenter];
+    scoreLabel.scale = .5;
+    scoreLabel.position = ccp(winSize.width/2, winSize.height/2);
+    [self addChild:scoreLabel z:100];
+
+}
+
 
 
 - (void)update:(ccTime)dt
@@ -1555,6 +1826,7 @@ enum GameStage {
     [self updatePowerupMultiple:dt];
     [self updateBoostEffects:dt];
     [self updateBoss:dt];
+    [self updateScore];
     
 }
 
@@ -1826,25 +2098,55 @@ enum GameStage {
  addChild:parallaxRatio:positionOffset.
  3.	Move the CCParallaxNode to scroll the background. It will scroll the children
  of the CCParallaxNode more quickly or slowly based on the parallaxRatio to.
+ 
+ A LOT IS OLD CODE HERE
  *******************************************************************************/
 - (void)setupBackground {
     
     CGSize winSize = [CCDirector sharedDirector].winSize;
+    
+    _background1 = [CCSprite spriteWithFile:@"background.png"];
+    //bg.scale = 2;
+    _background1.position = ccp(winSize.width/2, winSize.height/2);;
+    [self addChild:_background1 z:-5];
+    
+    [_background1 runAction:
+     [CCSequence actions:
+      [CCScaleTo actionWithDuration:10 scale:0.8],
+      nil]];
+
+    id a = [CCScaleTo actionWithDuration:10 scale:1];
+    id b = [CCScaleTo actionWithDuration:10 scale:1.2];
+    id sequence = [CCSequence actions:a, b, nil];
+    CCRepeatForever* zoomAction = [CCRepeat actionWithAction:sequence times:-1];
+    
+    [_background1 runAction:zoomAction];
+    
+
+    
+    //use this for more level backgrouds (make sure to remove sprite after)
+    //if(_levelManager.curStageIdx >= 0)
+    //{
+    //    _background1 = [CCSprite spriteWithFile:@"background.png"];
+    //    //bg.scale = 2;
+    //    _background1.position = ccp(winSize.width/2, winSize.height/2);;
+    //    [self addChild:_background1 z:-5];
+    //}
     
     // 1) Create the CCParallaxNode
     _backgroundNode = [CCParallaxNode node];
     [self addChild:_backgroundNode z:-2];
     
     // 2) Create the sprites to add to the CCParallaxNode
-    //_spacedust1 = [CCSprite spriteWithFile:@""];
+    //_spacedust1 = [CCSprite spriteWithFile:@"bg_front_spacedust.png"];
     //_spacedust2 = [CCSprite spriteWithFile:@""];
     //_planetsunrise = [CCSprite spriteWithFile:@"bg_planetsunrise.png"];
-    //_galaxy = [CCSprite spriteWithFile:@"bg_galaxy.png"];
+    _galaxy = [CCSprite spriteWithFile:@"bg_galaxy.png"];
     //_spacialanomaly = [CCSprite spriteWithFile:@"bg_spacialanomaly.png"];
     //_spacialanomaly2 = [CCSprite spriteWithFile:@"bg_spacialanomaly2.png"];
     
     // 3) Determine relative movement speeds for space dust and background
-    CGPoint dustSpeed = ccp(0.009, 0.009);
+    //CGPoint dustSpeed = ccp(0.009, 0.009);
     CGPoint bgSpeed = ccp(0.05, 0.05);
     
     // 4) Add children to CCParallaxNode
@@ -1870,10 +2172,10 @@ enum GameStage {
 }
 
 - (void)updateBackground:(ccTime)dt {
-    //CGPoint backgroundScrollVel = ccp(-1000, 0);
-    //_backgroundNode.position =
-    //ccpAdd(_backgroundNode.position,
-    //       ccpMult(backgroundScrollVel, dt));
+    CGPoint backgroundScrollVel = ccp(-1000, 0);
+    _backgroundNode.position =
+    ccpAdd(_backgroundNode.position,
+           ccpMult(backgroundScrollVel, dt));
 }
 
 /*******************************************************************************
@@ -1936,6 +2238,7 @@ enum GameStage {
             if ([enemyShip dead]) {
                 if (enemyShip == _boss || enemyShip == _bigTurret) {
                     _wantNextStage = YES;
+                    _score += 10000;
                     if(enemyShip == _bigTurret){
                         [_bigTurret turretDead];
                     }
@@ -1945,6 +2248,7 @@ enum GameStage {
                    enemyShip == _enemyFlyer4 || enemyShip == _enemyFlyer5 || enemyShip == _enemyFlyer6 ||
                    enemyShip == _enemyFlyer7 || enemyShip == _enemyFlyer8){
                     [self handleTimerOff];
+                    _score += 1000;
                 }
                 [[SimpleAudioEngine sharedEngine] playEffect:@"explosion_large.caf" pitch:1.0f pan:0.0f gain:0.25f];
                 CCParticleSystemQuad *explosion = [_explosions nextParticleSystem];
@@ -1962,6 +2266,7 @@ enum GameStage {
                 explosion.position = contactPoint;
                 
                 [explosion resetSystem];
+                _score += 100;
             } else {
                 [[SimpleAudioEngine sharedEngine] playEffect:@"explosion_small.caf" pitch:1.0f pan:0.0f gain:0.25f];
                 CCParticleSystemQuad *explosion = [_explosions nextParticleSystem];
@@ -2198,8 +2503,10 @@ enum GameStage {
     [_batchNode addChild:_bigTurret];
 }
 
-- (id)init {
+- (id)initWithHUD:(HUDLayer *)hud
+{
     if ((self = [super init])) {
+        _hud = hud;
         
         [self setupWorld];
         [self setupDebugDraw];
@@ -2224,12 +2531,17 @@ enum GameStage {
         [self setupBoss];
         [self setupBigTurret];
         
+        
+        //nice zoom in effect
         [self runAction:
          [CCSequence actions:
           [CCScaleTo actionWithDuration:1 scale:0.8],
           nil]];
         
     }
+    
+    _isPlaying = NO;
+    _score = 0;
     return self;
 }
 

@@ -95,7 +95,7 @@ typedef struct _KerningHashElement
 {
 	// Character Set defines the letters that actually exist in the font
 	NSCharacterSet *characterSet_;
-  
+    
 	// atlas name
 	NSString		*atlasName_;
     

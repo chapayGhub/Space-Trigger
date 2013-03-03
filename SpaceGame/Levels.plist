@@ -6,16 +6,118 @@
 	<array>
 		<array>
 			<dict>
+				<key>Background</key>
+				<string></string>
 				<key>Duration</key>
-				<integer>5</integer>
+				<integer>4</integer>
 				<key>SpawnLevelIntro</key>
 				<true/>
 				<key>LText</key>
-				<string>EasyBreezy</string>
+				<string></string>
+				<key>TText</key>
+				<string></string>
+				<key>SText</key>
+				<string>Tutorial</string>
+			</dict>
+			<dict>
+				<key>Duration</key>
+				<integer>6</integer>
+				<key>SpawnLevelIntro</key>
+				<true/>
+				<key>LText</key>
+				<string></string>
+				<key>TText</key>
+				<string></string>
+				<key>SText</key>
+				<string>Move By Tilting the IPad</string>
+			</dict>
+			<dict>
+				<key>Duration</key>
+				<integer>6</integer>
+				<key>SpawnLevelIntro</key>
+				<true/>
+				<key>LText</key>
+				<string></string>
+				<key>TText</key>
+				<string></string>
+				<key>SText</key>
+				<string>To Fire Weapons, Tap and Hold</string>
+			</dict>
+			<dict>
+				<key>Duration</key>
+				<integer>8</integer>
+				<key>SpawnLevelIntro</key>
+				<true/>
+				<key>LText</key>
+				<string></string>
+				<key>TText</key>
+				<string></string>
+				<key>SText</key>
+				<string>This is a PowerUp. Pick it up!</string>
+				<key>SpawnPowerupMultiple</key>
+				<true/>
+				<key>PMultipleSpawnSecs</key>
+				<integer>10</integer>
+			</dict>
+			<dict>
+				<key>Duration</key>
+				<integer>10</integer>
+				<key>SpawnLevelIntro</key>
+				<true/>
+				<key>LText</key>
+				<string></string>
+				<key>TText</key>
+				<string></string>
+				<key>SText</key>
+				<string>Great! Now Try and Shoot Down Some Enemies!</string>
+				<key>SpawnPowerupMultiple</key>
+				<true/>
+				<key>PMultipleSpawnSecs</key>
+				<integer>10</integer>
+				<key>SpawnEnemys</key>
+				<true/>
+				<key>AMoveDurationHigh</key>
+				<integer>20</integer>
+				<key>AMoveDurationLow</key>
+				<integer>12</integer>
+				<key>ASpawnSecsHigh</key>
+				<integer>10</integer>
+				<key>ASpawnSecsLow</key>
+				<integer>8</integer>
+			</dict>
+			<dict>
+				<key>Duration</key>
+				<integer>-1</integer>
+				<key>SpawnLevelIntro</key>
+				<true/>
+				<key>LText</key>
+				<string></string>
+				<key>TText</key>
+				<string></string>
+				<key>SText</key>
+				<string>This Concludes The Turorial.</string>
+				<key>SpawnPowerupMultiple</key>
+				<true/>
+				<key>PMultipleSpawnSecs</key>
+				<integer>10</integer>
+				<key>SpawnEnemys</key>
+				<true/>
+				<key>AMoveDurationHigh</key>
+				<integer>20</integer>
+				<key>AMoveDurationLow</key>
+				<integer>12</integer>
+				<key>ASpawnSecsHigh</key>
+				<integer>10</integer>
+				<key>ASpawnSecsLow</key>
+				<integer>8</integer>
 			</dict>
 			<dict>
 				<key>SpawnLevelIntro</key>
 				<true/>
+				<key>SText</key>
+				<string></string>
+				<key>TText</key>
+				<string></string>
 				<key>LText</key>
 				<string>Section1</string>
 				<key>SpawnPowerupBolt</key>
@@ -50,6 +152,10 @@
 			<dict>
 				<key>SpawnLevelIntro</key>
 				<true/>
+				<key>SText</key>
+				<string></string>
+				<key>TText</key>
+				<string></string>
 				<key>LText</key>
 				<string>Section2</string>
 				<key>SpawnPowerupBolt</key>
@@ -84,6 +190,10 @@
 			<dict>
 				<key>SpawnLevelIntro</key>
 				<true/>
+				<key>SText</key>
+				<string></string>
+				<key>TText</key>
+				<string></string>
 				<key>LText</key>
 				<string>Section3</string>
 				<key>SpawnPowerupBolt</key>
@@ -118,6 +228,10 @@
 			<dict>
 				<key>SpawnLevelIntro</key>
 				<true/>
+				<key>SText</key>
+				<string></string>
+				<key>TText</key>
+				<string></string>
 				<key>LText</key>
 				<string>Section4</string>
 				<key>SpawnPowerupBolt</key>
@@ -154,6 +268,10 @@
 			<dict>
 				<key>SpawnLevelIntro</key>
 				<true/>
+				<key>SText</key>
+				<string></string>
+				<key>TText</key>
+				<string></string>
 				<key>Duration</key>
 				<integer>2</integer>
 				<key>LText</key>

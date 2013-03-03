@@ -16,6 +16,7 @@
     double _stageStart;
     double _stageDuration;
     
+    
     //variables that reference to the data pulled from Levels.plist. It stores the overall
     //dictionary of data from the file, the list of levels and the current level index,
     //the list of stages within the level and the current stage index, and finally the
@@ -57,6 +58,11 @@
 - (int)curLevelIdx
 {
     return _curLevelIdx;
+}
+
+-(int)curStageIdx
+{
+    return _curStageIdx;
 }
 
 - (BOOL)hasProp:(NSString *)prop
