@@ -21,7 +21,7 @@
 #import "BossShip.h"
 #import "BigTurret.h"
 #import "HighScoreScene.h"
-#import "TestScene.h"
+#import "BigBoss.h"
 
 
 //Constants to make referring to shape categories easier in code.
@@ -306,7 +306,7 @@ enum GameStage {
       [CCMoveTo actionWithDuration:.25 position:ccp(winSize.width * .25, winSize.height)],
       nil]];
     
-    _titleLabel3 = [CCLabelBMFont labelWithString:@"Blaster" fntFile:fontName];
+    _titleLabel3 = [CCLabelBMFont labelWithString:@"Trigger" fntFile:fontName];
     _titleLabel3.scale = 0;
     _titleLabel3.position = ccp(winSize.width + 250, winSize.height * .85);
     [self addChild:_titleLabel3 z:100];
@@ -682,7 +682,7 @@ enum GameStage {
     // Reload the current scene
     [[CCDirector sharedDirector] replaceScene:
      [CCTransitionFade transitionWithDuration:2
-                                          scene:[TestScene node]]];
+                                          scene:[BigBoss node]]];
     [[SimpleAudioEngine sharedEngine] stopBackgroundMusic];
 }
 
@@ -1567,7 +1567,7 @@ enum GameStage {
         
         [[CCDirector sharedDirector] replaceScene:
          [CCTransitionFade transitionWithDuration:2
-                                            scene:[TestScene node]]];
+                                            scene:[BigBoss node]]];
         [[SimpleAudioEngine sharedEngine] stopBackgroundMusic];
     }
 
@@ -2161,6 +2161,7 @@ enum GameStage {
             
         case 3:
             [self gamePause];
+            
             break;
             
         default :
@@ -2175,6 +2176,7 @@ enum GameStage {
 {
     if(!_isPaused)
     {
+        [self showPauseAlert];
         [[CCDirector sharedDirector] stopAnimation];
         [[CCDirector sharedDirector] pause];
         _isPaused = YES;
@@ -2185,6 +2187,15 @@ enum GameStage {
         [[CCDirector sharedDirector] startAnimation];
         _isPaused = NO;
     }
+}
+
+-(void)showPauseAlert{
+    UIAlertView *alert = [[UIAlertView alloc] init];
+    [alert setTitle:@"Paused"];
+    [alert setMessage:@"To unpause, tap three times"];
+    [alert setDelegate:self];
+    [alert addButtonWithTitle:@"OK"];
+    [alert show];
 }
 
 -(void)beginFire
@@ -2520,7 +2531,10 @@ enum GameStage {
             explosion.position = contactPoint;
             [explosion resetSystem];
             
+            if(enemyShip != _bigTurret)
+            {
             [enemyShip destroy];
+            }
             _score += 100;
             [self updateScore];
             if (!_invincible) {

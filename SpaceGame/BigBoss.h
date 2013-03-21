@@ -11,13 +11,14 @@
 #import "Box2D.h"
 #import "HUDLayer.h"
 
-@interface TestScene : CCLayer {
+@interface BigBoss : CCLayer {
     
     CCParticleSystemQuad *emitter;
     CCParticleSystemQuad *emitter2;
     CCParticleSystemQuad *emitter3;
     CCParticleSystemQuad *emitter4;
     CCParticleSystemQuad *emitter5;
+    CCParticleSystemQuad *emitter6;
     
 }
 

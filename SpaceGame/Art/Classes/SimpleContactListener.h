@@ -10,17 +10,17 @@
 #import "cocos2d.h"
 #import "Box2D.h"
 #import "ActionLayer.h"
-#import "TestScene.h"
+#import "BigBoss.h"
 
 class SimpleContactListener : public b2ContactListener {
 public:
     ActionLayer *_layer;
-    TestScene *_layer2;
+    BigBoss *_layer2;
     
     
     SimpleContactListener(ActionLayer *layer) : _layer(layer) { 
     }
-    SimpleContactListener(TestScene *layer2) : _layer2(layer2) {
+    SimpleContactListener(BigBoss *layer2) : _layer2(layer2) {
     }
     
     void BeginContact(b2Contact* contact) { 

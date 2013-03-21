@@ -126,6 +126,25 @@
 	
 	// make main window visible
 	[window_ makeKeyAndVisible];
+    
+    // Register the preference defaults early.
+    NSDictionary *appDefaults = [NSDictionary
+                                 dictionaryWithObject:@"hi"
+                                 forKey:@"kMyLaunch"];
+    
+    [[NSUserDefaults standardUserDefaults] registerDefaults:appDefaults];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    
+    
+    NSLog(@"Settings Bundle:%@",[[NSUserDefaults standardUserDefaults] dictionaryRepresentation]);
+    
+    NSDateFormatter *df = [[NSDateFormatter alloc] init];
+    [df setDateFormat:@"dd-MM-yy HH:mm"];
+    NSString *dateString = [df stringFromDate:[NSDate date]];
+    
+    [[NSUserDefaults standardUserDefaults] setObject:dateString forKey:@"kMyLaunch"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    NSLog(@"Settings Bundle:%@",[[NSUserDefaults standardUserDefaults] dictionaryRepresentation]);
 	
 	return YES;
 }

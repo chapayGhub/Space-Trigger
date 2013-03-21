@@ -6,7 +6,7 @@
 //  Copyright 2013 Razeware LLC. All rights reserved.
 //
 
-#import "TestScene.h"
+#import "BigBoss.h"
 #import "ActionLayer.h"
 #import "SimpleAudioEngine.h"
 #import "Common.h"
@@ -22,7 +22,7 @@
 #import "BossShip.h"
 #import "BigTurret.h"
 #import "HighScoreScene.h"
-#import "TestScene.h"
+#import "BigBoss.h"
 
 //Constants to make referring to shape categories easier in code.
 #define kCategoryShip       0x1
@@ -39,7 +39,7 @@ enum GameStage {
 };
 
 
-@implementation TestScene
+@implementation BigBoss
 {
     
     //Variables for loading sprite sheet
@@ -210,7 +210,7 @@ enum GameStage {
 + (id)scene {
     CCScene *scene = [CCScene node];
     
-    TestScene *testScene = [TestScene node];
+    BigBoss *testScene = [BigBoss node];
     [scene addChild:testScene z:1];
     
     
@@ -1063,7 +1063,7 @@ enum GameStage {
     b2Vec2 b2ContactPoint = manifold.points[0];
     CGPoint contactPoint = ccp(b2ContactPoint.x * PTM_RATIO, b2ContactPoint.y * PTM_RATIO);
     
-    CGSize winSize = [CCDirector sharedDirector].winSize;
+    //CGSize winSize = [CCDirector sharedDirector].winSize;
     
     if ((fixtureA->GetFilterData().categoryBits &
          kCategoryShipLaser &&
@@ -1122,6 +1122,9 @@ enum GameStage {
             if(enemyShip == _bossarmsidebottom){
                 _bottomMiddleArmDead = YES;
             }
+            if(enemyShip == _bossmain){
+                [self bigExplosion:contactPoint];
+            }
             
             }
             
@@ -1157,6 +1160,9 @@ enum GameStage {
             if(enemyShip == _bossarmsidebottom){
                 [_ship destroy];
             }
+            if(enemyShip == _bossmain){
+                [_ship destroy];
+            }
             
             [[SimpleAudioEngine sharedEngine] playEffect:@"explosion_large.caf" pitch:1.0f pan:0.0f gain:0.25f];
             
@@ -1164,6 +1170,7 @@ enum GameStage {
             CCParticleSystemQuad *explosion = [_explosions nextParticleSystem];
             explosion.scale *= 0.5;
             explosion.position = contactPoint;
+            
             [explosion resetSystem];
             
             [enemyShip takeHit];
@@ -1183,8 +1190,29 @@ enum GameStage {
     
 }
 
+-(void)bigExplosion:(CGPoint)contactPoint
+{
+    //CGSize winSize = [CCDirector sharedDirector].winSize;
+    emitter6 = [CCParticleSystemQuad particleWithFile:@"bigexplosion2.plist"];
+        
+    emitter6.position = contactPoint;
+    
+    [self addChild:emitter6 z:100];
+    [self stopAllActions];
+    [self unscheduleAllSelectors];
+    [self scheduleUpdate];
+    [self scheduleOnce:@selector(bossCleared) delay:1];
+    
+    
+    
+    
+
+
+}
+
 -(void)explosionLarge:(CGPoint)contactPoint
 {
+    
     [[SimpleAudioEngine sharedEngine] playEffect:@"explosion_large.caf" pitch:1.0f pan:0.0f gain:1.0f];
     CCParticleSystemQuad *explosion = [_explosions nextParticleSystem];
     
@@ -1199,7 +1227,7 @@ enum GameStage {
     CCParticleSystemQuad *explosion = [_explosions nextParticleSystem];
     explosion.scale *= 0.25;
     explosion.position = contactPoint;
-    [explosion resetSystem];
+    //[explosion resetSystem];
 
 }
 
@@ -1250,6 +1278,58 @@ enum GameStage {
                                              scale:0.5]];
     
 }
+
+-(void)bossCleared
+{
+    
+    [self stopAllActions];
+    
+        
+    CGSize winSize = [CCDirector sharedDirector].winSize;
+    
+    NSString *message;
+            message = @"Boss Destroyed!";
+        
+    CCLabelBMFont *label = [CCLabelBMFont labelWithString:message
+                                                  fntFile:@"SpaceGameFont.fnt"];
+    label.scale = 0.1;
+    label.position = ccp(winSize.width/2,
+                         winSize.height * 0.6);
+    [self addChild:label];
+    
+    CCLabelBMFont *restartLabel = [CCLabelBMFont labelWithString:@"View High Scores"
+                                                         fntFile:@"SpaceGameFont.fnt"];
+    
+    CCMenuItemLabel *restartItem = [CCMenuItemLabel
+                                    itemWithLabel:restartLabel target:self
+                                    selector:@selector(highScores:)];
+    restartItem.scale = 0.1;
+    restartItem.position = ccp(winSize.width/2,
+                               winSize.height * 0.4);
+    
+    CCMenu *menu = [CCMenu menuWithItems:restartItem, nil];
+    menu.position = CGPointZero;
+    [self addChild:menu];
+    
+    [restartItem runAction:[CCScaleTo
+                            actionWithDuration:0.5 scale:0.5]];
+    [label runAction:[CCScaleTo actionWithDuration:0.5
+                                             scale:0.8]];
+    
+    
+}
+
+- (void)highScores:(id)sender {
+    
+    // Reload the current scene
+    [[CCDirector sharedDirector] replaceScene:
+     [CCTransitionFadeBL transitionWithDuration:2
+                                          scene:[HighScoreScene node]]];
+    
+    _isPlaying = NO;
+    
+}
+
 
 
 - (void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
@@ -1569,7 +1649,7 @@ enum GameStage {
                                                  batchNode:_batchNode
                                                      world:_world
                                                  shapeName:@"bossmain"
-                                                     maxHp:500
+                                                     maxHp:5
                                              healthBarType:HealthBarTypeRed];
     
     _bossArmSideArray = [[SpriteArray alloc] initWithCapacity:2
@@ -1577,7 +1657,7 @@ enum GameStage {
                                                     batchNode:_batchNode
                                                         world:_world
                                                     shapeName:@"bossarmside"
-                                                        maxHp:150
+                                                        maxHp:1
                                                 healthBarType:HealthBarTypeRed];
     
 
@@ -1586,7 +1666,7 @@ enum GameStage {
                                                batchNode:_batchNode
                                                    world:_world
                                                shapeName:@"bossarmbottom"
-                                                   maxHp:300
+                                                   maxHp:1
                                            healthBarType:HealthBarTypeRed];
     
     _bossBottomArmArray = [[SpriteArray alloc] initWithCapacity:1
@@ -1594,7 +1674,7 @@ enum GameStage {
                                                    batchNode:_batchNode
                                                        world:_world
                                                    shapeName:@"bossarmtop"
-                                                       maxHp:300
+                                                       maxHp:1
                                                healthBarType:HealthBarTypeRed];
     
     _fireballArray = [[SpriteArray alloc] initWithCapacity:10
@@ -1780,7 +1860,7 @@ enum GameStage {
     
     
     [self addChild:emitter z:100];
-    [self addChild:emitter2 z:-1];
+    //[self addChild:emitter2 z:-1];
     [self addChild:emitter3 z:-1];
     //[self addChild:emitter4 z:-1];
     //[self addChild:emitter5 z:-1];
@@ -1800,13 +1880,12 @@ enum GameStage {
         [self scheduleUpdate];
         [self setupArrays];
         self.touchEnabled = YES;
-        //[self setupShapeCache];
         [self setupBackground];
         //[self setupTitle];
         [self displayParticle];
         [self spawnShip];
-        [self spawnBossIntro];
-        //[self spawnBoss];
+        //[self spawnBossIntro];
+        [self spawnBoss];
         [self setupDebugDraw];
         
         [self runAction:
