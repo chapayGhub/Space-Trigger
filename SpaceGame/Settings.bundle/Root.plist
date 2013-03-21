@@ -4,7 +4,15 @@
 <dict>
 	<key>PreferenceSpecifiers</key>
 	<array>
-        <dict>
+		<dict>
+			<key>Type</key>
+			<string>PSTitleValueSpecifier</string>
+			<key>Title</key>
+			<string></string>
+			<key>Key</key>
+			<string></string>
+		</dict>
+		<dict>
 			<key>Title</key>
 			<string>User Details</string>
 			<key>Type</key>
@@ -19,13 +27,14 @@
 			<string>kMyLaunch</string>
 			<key>Key</key>
 			<string>kMyLaunch</string>
-		</dict>        <dict>
+		</dict>
+		<dict>
 			<key>Title</key>
 			<string>Version</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
-        <dict>
+		<dict>
 			<key>Type</key>
 			<string>PSTitleValueSpecifier</string>
 			<key>DefaultValue</key>

@@ -281,6 +281,7 @@
 		52497E1816E31F95002B96C4 /* HighScoreScene.mm in Sources */ = {isa = PBXBuildFile; fileRef = 52497E1716E31F95002B96C4 /* HighScoreScene.mm */; };
 		5277F27A16E5523C00265B72 /* BigBoss.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5277F27916E5523C00265B72 /* BigBoss.mm */; };
 		527F675D16FB825300C23C6E /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 527F675C16FB825200C23C6E /* Settings.bundle */; };
+		527F675F16FB8CCC00C23C6E /* Icon-144.png in Resources */ = {isa = PBXBuildFile; fileRef = 527F675E16FB8CCC00C23C6E /* Icon-144.png */; };
 		5294457416E6D7C500208A01 /* boss.png in Resources */ = {isa = PBXBuildFile; fileRef = 5294457316E6D7C400208A01 /* boss.png */; };
 		52C4D8EA16DD40D100FAE684 /* blocks.png in Resources */ = {isa = PBXBuildFile; fileRef = 52C4D8DE16DD40D000FAE684 /* blocks.png */; };
 		52C4D8EB16DD40D100FAE684 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 52C4D8DF16DD40D000FAE684 /* Default-568h@2x.png */; };
@@ -784,6 +785,7 @@
 		5277F27816E5523B00265B72 /* BigBoss.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BigBoss.h; sourceTree = "<group>"; };
 		5277F27916E5523C00265B72 /* BigBoss.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = BigBoss.mm; sourceTree = "<group>"; };
 		527F675C16FB825200C23C6E /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
+		527F675E16FB8CCC00C23C6E /* Icon-144.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Icon-144.png"; path = "../Icon-144.png"; sourceTree = "<group>"; };
 		5294457316E6D7C400208A01 /* boss.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = boss.png; sourceTree = "<group>"; };
 		52C4D8DE16DD40D000FAE684 /* blocks.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = blocks.png; path = Resources/blocks.png; sourceTree = "<group>"; };
 		52C4D8DF16DD40D000FAE684 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "Resources/Default-568h@2x.png"; sourceTree = "<group>"; };
@@ -896,6 +898,7 @@
 				359D567B165EC50C00EE148E /* fps_images.png */,
 				359D567D165EC50C00EE148E /* fps_images-hd.png */,
 				52C4D8DE16DD40D000FAE684 /* blocks.png */,
+				527F675E16FB8CCC00C23C6E /* Icon-144.png */,
 				52C4D8DF16DD40D000FAE684 /* Default-568h@2x.png */,
 				52C4D8E016DD40D000FAE684 /* Default-Landscape~ipad.png */,
 				52C4D8E116DD40D000FAE684 /* Default.png */,
@@ -1784,6 +1787,7 @@
 				523C6ABC16F9AFE90039F4B0 /* test.plist in Resources */,
 				523C6ABE16FB6CEB0039F4B0 /* bigexplosion2.plist in Resources */,
 				527F675D16FB825300C23C6E /* Settings.bundle in Resources */,
+				527F675F16FB8CCC00C23C6E /* Icon-144.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -448,7 +448,7 @@ enum GameStage {
      This creates a CCLabelBMFont that reads "Test"
      For testing different sprites/effects
      *******************************************************************************/
-    CCLabelBMFont *testLabel = [CCLabelBMFont labelWithString:@"Test" fntFile:fontName];
+    CCLabelBMFont *testLabel = [CCLabelBMFont labelWithString:@"Boss" fntFile:fontName];
     _testItem = [CCMenuItemLabel itemWithLabel:testLabel target:self
                                            selector:@selector(testTapped:)];
     _testItem.scale = 0;
@@ -608,7 +608,7 @@ enum GameStage {
     
     [[SimpleAudioEngine sharedEngine] playEffect:@"powerup.caf"];
     
-    NSArray * nodes = @[_titleLabel1, _titleLabel2, _titleLabel3, _playItem, _tutorialItem, _rectangle, _rectangle2, _rectangle3, _lenseFlare, _fighterMain, _fighterMain2, _highScoreItem];
+    NSArray * nodes = @[_titleLabel1, _titleLabel2, _titleLabel3, _playItem, _tutorialItem, _rectangle, _rectangle2, _rectangle3, _lenseFlare, _fighterMain, _fighterMain2, _highScoreItem, _testItem, _rectangle4];
     for (CCNode *node in nodes) {
         [node runAction:
          [CCSequence actions:
@@ -649,7 +649,7 @@ enum GameStage {
     
     [[SimpleAudioEngine sharedEngine] playEffect:@"powerup.caf"];
     
-    NSArray * nodes = @[_titleLabel1, _titleLabel2, _titleLabel3, _playItem, _tutorialItem, _rectangle, _rectangle2, _rectangle3, _lenseFlare, _fighterMain, _fighterMain2, _highScoreItem];
+    NSArray * nodes = @[_titleLabel1, _titleLabel2, _titleLabel3, _playItem, _tutorialItem, _rectangle, _rectangle2, _rectangle3, _lenseFlare, _fighterMain, _fighterMain2, _highScoreItem, _testItem, _rectangle4];
     for (CCNode *node in nodes) {
         [node runAction:
          [CCSequence actions:
@@ -679,6 +679,7 @@ enum GameStage {
 
 -(void)testTapped:(id)sender {
     
+    [self saveScores];
     // Reload the current scene
     [[CCDirector sharedDirector] replaceScene:
      [CCTransitionFade transitionWithDuration:2
@@ -1790,6 +1791,9 @@ enum GameStage {
                                  actionWithAction:shake times:-1];
         
         [powerup runAction:shakeAction];
+        
+        _score = _score + 1000;
+        [self updateScore];
 
         
     }
@@ -1863,6 +1867,9 @@ enum GameStage {
                                  actionWithAction:shake times:-1];
         
         [powerup runAction:shakeAction];
+        
+        _score = _score + 1000;
+        [self updateScore];
         
         
     }
@@ -2229,6 +2236,7 @@ enum GameStage {
 
 -(void)shootMultiple
 {
+    if(_isPlaying){
     if(_multiple){
         CGSize winSize = [CCDirector sharedDirector].winSize;
     
@@ -2275,12 +2283,14 @@ enum GameStage {
                                selector:@selector(invisNode:)],
           nil]];
     }
+    }
     
     
 }
 
 -(void)shootSingle
 {
+    if(_isPlaying){
     if(_single){
         CGSize winSize = [CCDirector sharedDirector].winSize;
     
@@ -2300,6 +2310,7 @@ enum GameStage {
           [CCCallFuncN actionWithTarget:self
                                selector:@selector(invisNode:)],
           nil]];
+    }
     }
 }
 
@@ -2519,7 +2530,7 @@ enum GameStage {
                enemyShip == _enemyFlyer4 || enemyShip == _enemyFlyer5 || enemyShip == _enemyFlyer6 ||
                enemyShip == _enemyFlyer7 || enemyShip == _enemyFlyer8){
                 [self handleTimerOff];
-                _score += 1000;
+                _score += 10000;
                 [self updateScore];
             }
             
@@ -2535,7 +2546,7 @@ enum GameStage {
             {
             [enemyShip destroy];
             }
-            _score += 100;
+            _score += 1000;
             [self updateScore];
             if (!_invincible) {
                 [_ship takeHit];
@@ -2543,6 +2554,10 @@ enum GameStage {
             
             if (_ship.dead) {
                 [self endScene:NO];
+                _isPlaying = NO;
+                [self stopAllActions];
+                [self unscheduleAllSelectors];
+                
             }
             
         }

@@ -136,7 +136,7 @@
     [[NSUserDefaults standardUserDefaults] synchronize];
     
     
-    NSLog(@"Settings Bundle:%@",[[NSUserDefaults standardUserDefaults] dictionaryRepresentation]);
+    //NSLog(@"Settings Bundle:%@",[[NSUserDefaults standardUserDefaults] dictionaryRepresentation]);
     
     NSDateFormatter *df = [[NSDateFormatter alloc] init];
     [df setDateFormat:@"dd-MM-yy HH:mm"];
@@ -144,7 +144,7 @@
     
     [[NSUserDefaults standardUserDefaults] setObject:dateString forKey:@"kMyLaunch"];
     [[NSUserDefaults standardUserDefaults] synchronize];
-    NSLog(@"Settings Bundle:%@",[[NSUserDefaults standardUserDefaults] dictionaryRepresentation]);
+    //NSLog(@"Settings Bundle:%@",[[NSUserDefaults standardUserDefaults] dictionaryRepresentation]);
 	
 	return YES;
 }

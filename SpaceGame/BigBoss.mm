@@ -1330,6 +1330,18 @@ enum GameStage {
     
 }
 
+- (void)restartTapped:(id)sender {
+    
+    // Reload the current scene
+    CCScene *scene = [ActionLayer scene];
+    [[CCDirector sharedDirector] replaceScene:
+     [CCTransitionZoomFlipX transitionWithDuration:1
+                                             scene:scene]];
+    
+    _isPlaying = NO;
+    
+}
+
 
 
 - (void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
