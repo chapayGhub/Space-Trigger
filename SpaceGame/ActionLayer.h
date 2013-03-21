@@ -21,9 +21,14 @@
     CCMenuItemFont *lastSentenceItem_, *lastAlignmentItem_;
     
     BOOL drag_;
+    
+    CCParticleSystemQuad *emitter;
+    CCParticleSystemQuad *emitter2;
+    CCParticleSystemQuad *emitter3;
 }
 
 + (id)scene;
+//+ (id)sceneHighScore;
 
 - (void)beginContact:(b2Contact *)contact;
 - (void)endContact:(b2Contact *)contact;
@@ -31,6 +36,7 @@
 - (void)shootEnemyLaserFromPosition:(CGPoint)position;
 - (void)shootEnemyVerticalDownLaserFromPosition:(CGPoint)position;
 - (void)shootEnemyVerticalUpLaserFromPosition:(CGPoint)position;
+- (void)shootAngleFromPosition:(CGPoint)position;
 
 
 - (void)shootCannonBallAtShipFromPosition:(CGPoint)position;

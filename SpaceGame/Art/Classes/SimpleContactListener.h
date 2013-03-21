@@ -10,20 +10,27 @@
 #import "cocos2d.h"
 #import "Box2D.h"
 #import "ActionLayer.h"
+#import "TestScene.h"
 
 class SimpleContactListener : public b2ContactListener {
 public:
     ActionLayer *_layer;
+    TestScene *_layer2;
+    
     
     SimpleContactListener(ActionLayer *layer) : _layer(layer) { 
+    }
+    SimpleContactListener(TestScene *layer2) : _layer2(layer2) {
     }
     
     void BeginContact(b2Contact* contact) { 
         [_layer beginContact:contact];
+        [_layer2 beginContact:contact];
     }
                         
     void EndContact(b2Contact* contact) { 
         [_layer endContact:contact];
+        [_layer2 endContact:contact];
     }
 
     void PreSolve(b2Contact* contact, const b2Manifold* oldManifold) { 

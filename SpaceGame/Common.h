@@ -14,5 +14,6 @@
 float randomValueBetween(float low, float high);
 
 #define PTM_RATIO ((UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) ? 200.0 : 100.0)
+#define PTM_RATIO_BOSS ((UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) ? 2000.0 : 100.0)
 
 @end

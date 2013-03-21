@@ -19,7 +19,6 @@
 @interface BigTurret : GameObject
 
 - (id)initWithWorld:(b2World*)world layer:(ActionLayer*)layer;
-- (id)init2WithWorld:(b2World*)world layer:(ActionLayer*)layer;
 - (void)updateWithShipPosition:(CGPoint)shipPosition;
 -(void)turretDead;
 

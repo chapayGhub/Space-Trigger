@@ -96,7 +96,8 @@
     
     if (_healthBarType == HealthBarTypeNone) return;
     
-    float POINTS_PER_SEC = 50;
+    
+    float POINTS_PER_SEC = 10;
     float percentage = _hp / _maxHp;
     percentage = MIN(percentage, 1.0);
     percentage = MAX(percentage, 0);

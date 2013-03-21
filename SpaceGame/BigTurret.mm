@@ -29,10 +29,10 @@
 
 - (id)initWithWorld:(b2World*)world layer:(ActionLayer*)layer {
     
-    if ((self = [super initWithSpriteFrameName:@"Big_turret.png"
+    if ((self = [super initWithSpriteFrameName:@"carrier1.png"
                                          world:world
-                                     shapeName:@"Boss_ship"
-                                         maxHp:50
+                                     shapeName:@"carrier1"
+                                         maxHp:500
                                  healthBarType:HealthBarTypeRed])) {
         
         _layer = layer;
@@ -61,8 +61,11 @@
     
     CCFiniteTimeAction *action;
     if (randomAction == 0 || !_initialMove) {
+        if(_initialMove == NO){
+            [self shootTimer];
+        }
         _initialMove = YES;
-        [self schedule:@selector(shootLasers) interval:1];
+        
         
         float randWidth = winSize.width *
         randomValueBetween(0.3, 1.0);
@@ -83,9 +86,9 @@
         
         CCAnimation *animation = [CCAnimation animation];
         [animation addSpriteFrame:
-         [cache spriteFrameByName:@"Big_turret.png"]];
+         [cache spriteFrameByName:@"carrier1.png"]];
         [animation addSpriteFrame:
-         [cache spriteFrameByName:@"Big_turret2.png"]];
+         [cache spriteFrameByName:@"carrier1.png"]];
         animation.delayPerUnit = 0.2;
         
         [self runAction:
@@ -125,14 +128,30 @@
     
 }
 
+- (void)shootTimer {
+    
+    CCCallFunc *call = [CCCallFunc actionWithTarget:self selector:@selector(shootLasers)];
+    CCDelayTime *delay1 = [CCDelayTime actionWithDuration:1];
+    CCDelayTime *delay2 = [CCDelayTime actionWithDuration:4];
+    CCDelayTime *delay3 = [CCDelayTime actionWithDuration:.4];
+    
+    
+    //CCSequence *actionToRun = [CCSequence actions:shootFireball, nil];
+    CCSequence *actionToRun = [CCSequence actions:call,delay1,call,delay1,call,delay2,call,delay1,call,delay1,call,delay1,call,delay1,call,
+                               call,delay3,call,delay3,call,delay2,call,delay3,call,delay3,call,delay3,call,delay3,call,nil];
+    CCRepeatForever *repeat = [CCRepeatForever actionWithAction:actionToRun];
+    [self runAction:repeat];
+    
+}
+
 -(void)shootLasers
 {
-    CGPoint lasers = ccp(self.position.x - 150, self.position.y + 22);
-    CGPoint lasers2 = ccp(self.position.x - 150, self.position.y - 25);
-    CGPoint lasers3 = ccp(self.position.x - 50, self.position.y - 125);
-    CGPoint lasers4 = ccp(self.position.x - 50, self.position.y + 125);
+    CGPoint lasers = ccp(self.position.x - 150, self.position.y);
+    CGPoint lasers2 = ccp(self.position.x - 150, self.position.y);
+    CGPoint lasers3 = ccp(self.position.x - 50, self.position.y );
+    CGPoint lasers4 = ccp(self.position.x - 50, self.position.y );
     
-    [_layer shootEnemyLaserFromPosition:
+    [_layer shootAngleFromPosition:
      lasers];
     [_layer shootEnemyLaserFromPosition:
      lasers2];

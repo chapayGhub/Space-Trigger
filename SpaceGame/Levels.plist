@@ -15,9 +15,9 @@
 				<key>LText</key>
 				<string></string>
 				<key>TText</key>
-				<string></string>
-				<key>SText</key>
 				<string>Tutorial</string>
+				<key>SText</key>
+				<string></string>
 			</dict>
 			<dict>
 				<key>Duration</key>
@@ -39,9 +39,9 @@
 				<key>LText</key>
 				<string></string>
 				<key>TText</key>
-				<string></string>
-				<key>SText</key>
 				<string>To Fire Weapons, Tap and Hold</string>
+				<key>SText</key>
+				<string></string>
 			</dict>
 			<dict>
 				<key>Duration</key>
@@ -58,6 +58,18 @@
 				<true/>
 				<key>PMultipleSpawnSecs</key>
 				<integer>10</integer>
+			</dict>
+			<dict>
+				<key>Duration</key>
+				<integer>6</integer>
+				<key>SpawnLevelIntro</key>
+				<true/>
+				<key>LText</key>
+				<string></string>
+				<key>TText</key>
+				<string>To Pause The Game, Tap 3 times.</string>
+				<key>SText</key>
+				<string></string>
 			</dict>
 			<dict>
 				<key>Duration</key>
@@ -93,9 +105,9 @@
 				<key>LText</key>
 				<string></string>
 				<key>TText</key>
-				<string></string>
-				<key>SText</key>
 				<string>This Concludes The Turorial.</string>
+				<key>SText</key>
+				<string></string>
 				<key>SpawnPowerupMultiple</key>
 				<true/>
 				<key>PMultipleSpawnSecs</key>
@@ -123,31 +135,31 @@
 				<key>SpawnPowerupBolt</key>
 				<false/>
 				<key>SpawnPowerupMultiple</key>
-				<true/>
+				<false/>
 				<key>SpawnEnemyFlyer</key>
 				<false/>
 				<key>SpawnEnemys</key>
 				<true/>
-				<key>SpawnAlienSwarm</key>
+				<key>SpawnAlienWasp</key>
 				<false/>
 				<key>SpawnBigTurret</key>
 				<false/>
 				<key>SpawnBoss</key>
 				<false/>
 				<key>Duration</key>
-				<integer>20</integer>
+				<integer>1</integer>
 				<key>PBoltSpawnSecs</key>
 				<integer>10</integer>
 				<key>PMultipleSpawnSecs</key>
 				<integer>10</integer>
 				<key>AMoveDurationHigh</key>
-				<integer>9</integer>
+				<integer>10</integer>
 				<key>AMoveDurationLow</key>
-				<integer>7</integer>
+				<integer>8</integer>
 				<key>ASpawnSecsHigh</key>
-				<integer>5</integer>
+				<integer>6</integer>
 				<key>ASpawnSecsLow</key>
-				<integer>2</integer>
+				<integer>3</integer>
 			</dict>
 			<dict>
 				<key>SpawnLevelIntro</key>
@@ -166,14 +178,14 @@
 				<false/>
 				<key>SpawnEnemys</key>
 				<true/>
-				<key>SpawnAlienSwarm</key>
+				<key>SpawnAlienWasp</key>
 				<false/>
 				<key>SpawnBigTurret</key>
-				<true/>
+				<false/>
 				<key>SpawnBoss</key>
 				<false/>
 				<key>Duration</key>
-				<integer>-1</integer>
+				<integer>1</integer>
 				<key>PBoltSpawnSecs</key>
 				<integer>10</integer>
 				<key>PMultipleSpawnSecs</key>
@@ -185,7 +197,7 @@
 				<key>ASpawnSecsHigh</key>
 				<integer>5</integer>
 				<key>ASpawnSecsLow</key>
-				<integer>2</integer>
+				<integer>1</integer>
 			</dict>
 			<dict>
 				<key>SpawnLevelIntro</key>
@@ -199,31 +211,31 @@
 				<key>SpawnPowerupBolt</key>
 				<true/>
 				<key>SpawnPowerupMultiple</key>
-				<false/>
+				<true/>
 				<key>SpawnEnemyFlyer</key>
 				<false/>
 				<key>SpawnEnemys</key>
-				<false/>
-				<key>SpawnAlienSwarm</key>
-				<false/>
-				<key>SpawnBigTurret</key>
 				<true/>
+				<key>SpawnAlienWasp</key>
+				<true/>
+				<key>SpawnBigTurret</key>
+				<false/>
 				<key>SpawnBoss</key>
 				<false/>
-				<key>Duration</key>
-				<integer>-1</integer>
-				<key>PBoltSpawnSecs</key>
-				<integer>10</integer>
-				<key>PMultipleSpawnSecs</key>
-				<integer>10</integer>
 				<key>AMoveDurationHigh</key>
 				<integer>9</integer>
+				<key>Duration</key>
+				<integer>1</integer>
+				<key>PBoltSpawnSecs</key>
+				<integer>50</integer>
+				<key>PMultipleSpawnSecs</key>
+				<integer>30</integer>
 				<key>AMoveDurationLow</key>
 				<integer>7</integer>
 				<key>ASpawnSecsHigh</key>
 				<integer>5</integer>
 				<key>ASpawnSecsLow</key>
-				<integer>2</integer>
+				<integer>1</integer>
 			</dict>
 			<dict>
 				<key>SpawnLevelIntro</key>
@@ -235,23 +247,23 @@
 				<key>LText</key>
 				<string>Section4</string>
 				<key>SpawnPowerupBolt</key>
-				<true/>
+				<false/>
 				<key>SpawnPowerupMultiple</key>
-				<false/>
+				<true/>
 				<key>SpawnEnemyFlyer</key>
-				<false/>
+				<true/>
 				<key>SpawnEnemys</key>
 				<true/>
-				<key>SpawnAlienSwarm</key>
-				<true/>
+				<key>SpawnAlienWasp</key>
+				<false/>
 				<key>SpawnBigTurret</key>
 				<false/>
 				<key>SpawnBoss</key>
 				<false/>
 				<key>Duration</key>
-				<integer>20</integer>
+				<integer>-1</integer>
 				<key>PBoltSpawnSecs</key>
-				<integer>10</integer>
+				<integer>30</integer>
 				<key>PMultipleSpawnSecs</key>
 				<integer>10</integer>
 				<key>AMoveDurationHigh</key>
@@ -261,40 +273,6 @@
 				<key>ASpawnSecsHigh</key>
 				<integer>5</integer>
 				<key>ASpawnSecsLow</key>
-				<integer>2</integer>
-			</dict>
-		</array>
-		<array>
-			<dict>
-				<key>SpawnLevelIntro</key>
-				<true/>
-				<key>SText</key>
-				<string></string>
-				<key>TText</key>
-				<string></string>
-				<key>Duration</key>
-				<integer>2</integer>
-				<key>LText</key>
-				<string>Uber Nova</string>
-			</dict>
-			<dict>
-				<key>SpawnAlienSwarm</key>
-				<true/>
-				<key>Duration</key>
-				<integer>30</integer>
-				<key>SpawnEnemys</key>
-				<true/>
-				<key>SpawnPowerupBolt</key>
-				<true/>
-				<key>PBoltSpawnSecs</key>
-				<integer>20</integer>
-				<key>AMoveDurationHigh</key>
-				<integer>10</integer>
-				<key>AMoveDurationLow</key>
-				<integer>2</integer>
-				<key>ASpawnSecsHigh</key>
-				<integer>3</integer>
-				<key>ASpawnSecsLow</key>
 				<integer>1</integer>
 			</dict>
 		</array>
@@ -302,16 +280,62 @@
 			<dict>
 				<key>SpawnLevelIntro</key>
 				<true/>
-				<key>Duration</key>
-				<integer>2</integer>
+				<key>SText</key>
+				<string>WARNING!</string>
+				<key>TText</key>
+				<string></string>
 				<key>LText</key>
-				<string>Dark Onslaught</string>
-			</dict>
-			<dict>
-				<key>SpawnBoss</key>
-				<true/>
+				<string>DESTROY ENEMY SHIP</string>
 				<key>Duration</key>
 				<integer>-1</integer>
+				<key>SpawnBigTurret</key>
+				<true/>
+			</dict>
+			<dict>
+				<key>SpawnAlienWasp</key>
+				<true/>
+				<key>Duration</key>
+				<integer>50</integer>
+				<key>SpawnEnemys</key>
+				<true/>
+				<key>SpawnPowerupBolt</key>
+				<true/>
+				<key>PBoltSpawnSecs</key>
+				<integer>20</integer>
+				<key>AMoveDurationHigh</key>
+				<integer>15</integer>
+				<key>AMoveDurationLow</key>
+				<integer>12</integer>
+				<key>ASpawnSecsHigh</key>
+				<integer>1</integer>
+				<key>ASpawnSecsLow</key>
+				<real>0.8</real>
+			</dict>
+			<dict>
+				<key>SpawnLevelIntro</key>
+				<true/>
+				<key>SText</key>
+				<string>WARNING!</string>
+				<key>TText</key>
+				<string></string>
+				<key>LText</key>
+				<string>GET READY</string>
+				<key>Duration</key>
+				<integer>8</integer>
+			</dict>
+			<dict>
+				<key>NextStage</key>
+				<true/>
+                <key>SpawnLevelIntro</key>
+				<true/>
+				<key>SText</key>
+				<string></string>
+				<key>TText</key>
+				<string></string>
+				<key>LText</key>
+				<string></string>
+				<key>Duration</key>
+				<integer>5</integer>
 			</dict>
 		</array>
 	</array>

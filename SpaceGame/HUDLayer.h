@@ -12,9 +12,12 @@
 @interface HUDLayer : CCLayer
 {
     CCLabelBMFont * _scoreLabel;
+    CCLabelBMFont *_scoreLabelScore;
 }
 
 - (void)setScoreLabel:(NSString *)string;
+- (void)setScoreLabelScore:(NSString *)string;
+- (CCLabelBMFont*)getScoreLabel;
 
 
 @end
