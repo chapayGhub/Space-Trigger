@@ -1181,6 +1181,9 @@ enum GameStage {
             
             if (_ship.dead) {
                 [self endScene:NO];
+                _isPlaying = NO;
+                [self stopAllActions];
+                [self unscheduleAllSelectors];
             }
             
         }
@@ -1227,7 +1230,7 @@ enum GameStage {
     CCParticleSystemQuad *explosion = [_explosions nextParticleSystem];
     explosion.scale *= 0.25;
     explosion.position = contactPoint;
-    //[explosion resetSystem];
+    [explosion resetSystem];
 
 }
 
@@ -1425,6 +1428,7 @@ enum GameStage {
 
 -(void)shootMultiple
 {
+    if(_isPlaying){
     if(_multiple){
         CGSize winSize = [CCDirector sharedDirector].winSize;
         
@@ -1471,12 +1475,15 @@ enum GameStage {
                                selector:@selector(invisNode:)],
           nil]];
     }
+    }
     
     
 }
 
 -(void)shootSingle
 {
+    
+    if(_isPlaying){
     if(_single){
         CGSize winSize = [CCDirector sharedDirector].winSize;
         
@@ -1496,6 +1503,7 @@ enum GameStage {
           [CCCallFuncN actionWithTarget:self
                                selector:@selector(invisNode:)],
           nil]];
+    }
     }
 }
 
@@ -1661,7 +1669,7 @@ enum GameStage {
                                                  batchNode:_batchNode
                                                      world:_world
                                                  shapeName:@"bossmain"
-                                                     maxHp:5
+                                                     maxHp:500
                                              healthBarType:HealthBarTypeRed];
     
     _bossArmSideArray = [[SpriteArray alloc] initWithCapacity:2
@@ -1669,7 +1677,7 @@ enum GameStage {
                                                     batchNode:_batchNode
                                                         world:_world
                                                     shapeName:@"bossarmside"
-                                                        maxHp:1
+                                                        maxHp:150
                                                 healthBarType:HealthBarTypeRed];
     
 
@@ -1678,7 +1686,7 @@ enum GameStage {
                                                batchNode:_batchNode
                                                    world:_world
                                                shapeName:@"bossarmbottom"
-                                                   maxHp:1
+                                                   maxHp:300
                                            healthBarType:HealthBarTypeRed];
     
     _bossBottomArmArray = [[SpriteArray alloc] initWithCapacity:1
@@ -1686,7 +1694,7 @@ enum GameStage {
                                                    batchNode:_batchNode
                                                        world:_world
                                                    shapeName:@"bossarmtop"
-                                                       maxHp:1
+                                                       maxHp:300
                                                healthBarType:HealthBarTypeRed];
     
     _fireballArray = [[SpriteArray alloc] initWithCapacity:10
@@ -1872,7 +1880,7 @@ enum GameStage {
     
     
     [self addChild:emitter z:100];
-    //[self addChild:emitter2 z:-1];
+    [self addChild:emitter2 z:-1];
     [self addChild:emitter3 z:-1];
     //[self addChild:emitter4 z:-1];
     //[self addChild:emitter5 z:-1];
@@ -1896,8 +1904,8 @@ enum GameStage {
         //[self setupTitle];
         [self displayParticle];
         [self spawnShip];
-        //[self spawnBossIntro];
-        [self spawnBoss];
+        [self spawnBossIntro];
+        //[self spawnBoss];
         [self setupDebugDraw];
         
         [self runAction:
@@ -1914,6 +1922,7 @@ enum GameStage {
     _topMiddleArmDead = NO;
     _bottomMiddleArmDead = NO;
     _stopLooping = NO;
+    _isPlaying = YES;
     return self;
 }
 
