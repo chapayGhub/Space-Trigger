@@ -868,10 +868,10 @@
 			isa = PBXGroup;
 			children = (
 				35E7C4E816613DB70075C310 /* Levels.plist */,
-				5226D9C116DDA25F00E8D824 /* BigTurret.h */,
-				5226D9C216DDA25F00E8D824 /* BigTurret.mm */,
 				359D5960165ED3DB00EE148E /* ActionLayer.h */,
 				359D5961165ED3DC00EE148E /* ActionLayer.mm */,
+				5226D9C116DDA25F00E8D824 /* BigTurret.h */,
+				5226D9C216DDA25F00E8D824 /* BigTurret.mm */,
 				523A3E5716E2DA2B006636D8 /* HUDLayer.h */,
 				523A3E5816E2DA2B006636D8 /* HUDLayer.mm */,
 				52497E1616E31F95002B96C4 /* HighScoreScene.h */,
