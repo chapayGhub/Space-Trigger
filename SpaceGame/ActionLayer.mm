@@ -1791,10 +1791,7 @@ enum GameStage {
                                  actionWithAction:shake times:-1];
         
         [powerup runAction:shakeAction];
-        
-        _score = _score + 1000;
-        [self updateScore];
-
+    
         
     }
     
@@ -1867,9 +1864,6 @@ enum GameStage {
                                  actionWithAction:shake times:-1];
         
         [powerup runAction:shakeAction];
-        
-        _score = _score + 1000;
-        [self updateScore];
         
         
     }
@@ -2578,6 +2572,9 @@ enum GameStage {
             
             [powerUp destroy];
             _powerupSingle++;
+            _score = _score + 1000;
+            [self updateScore];
+
             
             /*******************************************************************************
              This marks the ship as invincible and starts up a particle system. It then moves
@@ -2623,6 +2620,9 @@ enum GameStage {
             [[SimpleAudioEngine sharedEngine] playEffect:@"powerup2.wav" pitch:1.0 pan:0.0 gain:1.0];
             
             [powerUp destroy];
+            _score = _score + 1000;
+            [self updateScore];
+
             // Make the powerup do something!
             _single = NO;
             _multiple = YES;
