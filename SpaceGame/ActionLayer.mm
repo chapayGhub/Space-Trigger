@@ -632,8 +632,6 @@ enum GameStage {
     //start with singleshot
     _single = YES;
     
-    _isPlaying = YES;
-    
     [self showScore];
     
    //emitter = [CCParticleSystemQuad particleWithFile:@"comet.plist"];
@@ -766,7 +764,11 @@ enum GameStage {
      new CCAnimate action on the ship, wrapped in a CCRepeatForeverAction
      *******************************************************************************/
     
-    
+
+
+    _isPlaying = YES;
+
+
 }
 
 /*******************************************************************************
