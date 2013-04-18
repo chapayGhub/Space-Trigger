@@ -467,16 +467,16 @@ enum GameStage {
     
     
     
-    emitter = [CCParticleSystemQuad particleWithFile:@"comet.plist"];
-    emitter.position = ccp(-200, winSize.height + 100);
+    //emitter = [CCParticleSystemQuad particleWithFile:@"comet.plist"];
+    //emitter.position = ccp(-200, winSize.height + 100);
     
-    [emitter runAction:
-     [CCSequence actions:
-      [CCDelayTime actionWithDuration:5],
-      [CCMoveTo actionWithDuration:5 position:ccp(winSize.width + 800, -500)],
-      nil]];
+    //[emitter runAction:
+     //[CCSequence actions:
+      //[CCDelayTime actionWithDuration:5],
+      //[CCMoveTo actionWithDuration:5 position:ccp(winSize.width + 800, -500)],
+     // nil]];
     
-    [self addChild:emitter z:100];
+    //[self addChild:emitter z:100];
     
     
     
