@@ -7,7 +7,7 @@ V1.0 - Final project for iOS. Only works with iPad- nonRetina for now. One level
 
 V1.1 - Retina Support added (won't crash). Images are still non-HD on retina.
 
-SCREENSHOTS:
+SCREENSHOTS: 
 ____________
 
 ![Alt text](title.png "Screenshot 1")
